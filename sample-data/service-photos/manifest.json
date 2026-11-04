@@ -1,0 +1,9 @@
+{
+  "about": "Sample service photos for the Live Demo (src/demo/config.ts). Seed data, not site assets: never part of a production build. On a real site, the owner uploads their own in the dashboard (Services). The owner replaces or removes them in the dashboard (Services). AI-generated — see PHOTOS.md.",
+  "photos": [
+    { "service": "Cut & Style", "file": "cut-and-style.jpg", "alt": "A stylist trims the ends of softly waved chestnut hair with scissors and a comb" },
+    { "service": "Blow-Dry & Style", "file": "blow-dry-and-style.jpg", "alt": "A round brush lifts glossy, freshly blow-dried brown hair" },
+    { "service": "Balayage", "file": "balayage.jpg", "alt": "Long hair with soft caramel and honey balayage, seen from behind" },
+    { "service": "Deep Conditioning Treatment", "file": "deep-conditioning.jpg", "alt": "Hands work a conditioning mask through damp hair at the wash basin" }
+  ]
+}

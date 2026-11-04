@@ -1,0 +1,87 @@
+/* VENDORED from booking-niche-packs/shared/demo-engine — edit it there, then run scripts/sync-shared.mjs. */
+/* The Live Demo strip (DemoBar.tsx). Self-contained: no site or dashboard tokens,
+   so it reads the same above any design. Literal colours, light on ink. */
+#booking-demo-bar {
+  position: relative;
+  z-index: 60;
+}
+.bdemo {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 2.5rem;
+  padding: 0.375rem 0.75rem 0.375rem 1rem;
+  background: #16130f;
+  color: #f3eee6;
+  font: 500 0.8125rem/1.35 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  letter-spacing: 0;
+}
+.bdemo-dot {
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: #e0a458;
+  box-shadow: 0 0 0 3px rgba(224, 164, 88, 0.22);
+}
+.bdemo-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+}
+.bdemo-text strong {
+  font-weight: 650;
+  color: #fff;
+}
+.bdemo-long {
+  color: #cfc6b8;
+}
+.bdemo-actions {
+  display: flex;
+  flex: none;
+  gap: 0.375rem;
+}
+.bdemo-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.bdemo-btn:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+}
+.bdemo-btn:focus-visible {
+  outline: 2px solid #e0a458;
+  outline-offset: 2px;
+}
+.bdemo-btn--primary {
+  border-color: #e0a458;
+  background: #e0a458;
+  color: #16130f;
+}
+.bdemo-btn--quiet {
+  border-color: transparent;
+  color: #cfc6b8;
+}
+@media (max-width: 40rem) {
+  .bdemo {
+    gap: 0.5rem;
+    padding-left: 0.75rem;
+    font-size: 0.75rem;
+  }
+  .bdemo-long {
+    display: none;
+  }
+  .bdemo-btn {
+    padding: 0 0.625rem;
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "hero": {
+    "widths": [
+      480,
+      720,
+      922
+    ],
+    "width": 922,
+    "height": 1152
+  },
+  "studio-wide": {
+    "widths": [
+      640,
+      1080,
+      1600
+    ],
+    "width": 1728,
+    "height": 1152
+  },
+  "color-bar": {
+    "widths": [
+      400,
+      640,
+      864
+    ],
+    "width": 864,
+    "height": 1152
+  },
+  "sample-color": {
+    "widths": [
+      400,
+      640,
+      922
+    ],
+    "width": 922,
+    "height": 1152
+  },
+  "sample-precision": {
+    "widths": [
+      400,
+      640,
+      922
+    ],
+    "width": 922,
+    "height": 1152
+  },
+  "sample-curls": {
+    "widths": [
+      400,
+      640,
+      922
+    ],
+    "width": 922,
+    "height": 1152
+  },
+  "storefront": {
+    "widths": [
+      640,
+      1080,
+      1600
+    ],
+    "width": 1728,
+    "height": 1152
+  }
+}

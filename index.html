@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Copper &amp; Comb · Hair salon in Portland, Oregon</title>
+    <meta
+      name="description"
+      content="Copper &amp; Comb is a neighborhood hair salon in Portland, Oregon. Cuts, color and styling — see services and prices and book an appointment online."
+    />
+    <meta name="theme-color" content="#f4eee4" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Copper &amp; Comb · Hair salon in Portland, Oregon" />
+    <meta
+      property="og:description"
+      content="Cuts, color and styling in Portland. Book an appointment online."
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- The default hero photo (src/content/site.ts → hero.photo): fetched while the scripts load.
+         imagesizes matches the plate's `sizes` in src/components/Hero.tsx, so the same file is used. -->
+    <link rel="preload" as="image" type="image/avif" imagesrcset="/photos/hero-480.avif 480w, /photos/hero-720.avif 720w, /photos/hero-922.avif 922w" imagesizes="(min-width: 60em) 42vw, 100vw" fetchpriority="high" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <p style="padding: 1.5rem; font-family: sans-serif">
+        Copper &amp; Comb — hair salon in Portland, Oregon. Please turn on JavaScript to see our
+        services and book an appointment online.
+      </p>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,2508 @@
+/*
+ * Copper & Comb — booking. Studio's interaction model (summary · month ·
+ * grouped times, a week strip on phones) dressed in the site's own Atelier
+ * tokens: paper, hairlines, serif numerals, an espresso reservation slip.
+ */
+
+/* ------------------------------------------------------------ the view -- */
+
+.bv {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--paper);
+  color: var(--ink);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-padding-top: 120px;
+}
+
+.bv::backdrop {
+  background: var(--paper);
+}
+
+.bv-head {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+
+.bv-head__bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 24px;
+  width: min(100% - 2 * var(--margin), var(--max) - 2 * 64px);
+  height: 72px;
+  margin-inline: auto;
+}
+
+.bv-head__start {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.bv-head__brand .wordmark {
+  font-size: 24px;
+}
+
+.bv-head__brand .wordmark-logo {
+  height: 26px;
+}
+
+.bv-icon {
+  display: inline-grid;
+  place-items: center;
+  min-width: 44px;
+  height: 44px;
+  border-radius: var(--r-pill);
+  color: var(--ink);
+}
+
+.bv-head__back {
+  display: none;
+}
+
+.bv-head__close {
+  display: inline-flex;
+  grid-column: 3;
+  align-items: center;
+  gap: 8px;
+  justify-self: end;
+  padding: 0 8px;
+  font: 500 var(--fs-14) / 1 var(--font-text);
+  color: var(--ink-2);
+}
+
+@media (hover: hover) {
+  .bv-head__close:hover {
+    color: var(--ink);
+  }
+}
+
+/* The route through the steps: ✓ Service — ② Date & time — … */
+.route {
+  display: flex;
+  align-items: center;
+}
+
+.route__step {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font: 500 13.5px / 1 var(--font-text);
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+.route__step + .route__step::before {
+  content: '';
+  width: 32px;
+  height: 1px;
+  margin: 0 12px 0 3px;
+  background: var(--line-2);
+}
+
+.route__mark {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--line-ctl);
+  border-radius: 50%;
+  font: 600 var(--fs-11) / 1 var(--font-text);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-3);
+}
+
+.route__step.is-done {
+  color: var(--ink-2);
+}
+
+.route__step.is-done .route__mark {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--card);
+}
+
+.route__step.is-current {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.route__step.is-current .route__mark {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.route__step.is-done + .route__step::before {
+  background: var(--ink);
+}
+
+.bv-progress {
+  display: none;
+}
+
+.flow__body {
+  width: min(100% - 2 * var(--margin), var(--max) - 2 * 64px);
+  margin-inline: auto;
+  padding: 40px 0 64px;
+}
+
+.flow__preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin-bottom: 20px;
+  font-size: var(--fs-14);
+  color: var(--ink-2);
+}
+
+/* A step's title row: "STEP 2 OF 5 · DATE & TIME" / When would you like to *come in?* */
+.step-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 40px;
+  margin-bottom: 32px;
+}
+
+.step-head__kicker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.step-head__kicker::before {
+  content: '';
+  flex: none;
+  width: 28px;
+  height: 1px;
+  background: var(--accent);
+}
+
+.step-head__title {
+  margin-top: 16px;
+  font-size: clamp(36px, 3.6vw, 54px);
+  line-height: 1.02;
+}
+
+.step-head__aside {
+  flex: none;
+  padding-bottom: 6px;
+}
+
+.step-head__note {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 44ch;
+  font-size: var(--fs-14);
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+.step-head__note .icon {
+  color: var(--ink-3);
+}
+
+/* ------------------------------------------------------------ layout -- */
+
+.bk-layout {
+  display: grid;
+  grid-template-columns: 312px minmax(0, 1fr);
+  align-items: start;
+  gap: 24px;
+}
+
+.bk-layout--form {
+  grid-template-columns: 312px minmax(0, 760px);
+}
+
+/* Date & time: the slip stands exactly as tall as the calendar beside it —
+   their tops and bottoms line up. The rows come from the slip and the
+   calendar; a long list of times runs on below them (row 2). */
+.bk-layout--times {
+  grid-template-columns: 312px minmax(0, 1.16fr) minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  row-gap: 0;
+}
+
+.bk-layout--times > .slip {
+  display: flex;
+  flex-direction: column;
+  grid-row: 1;
+  align-self: stretch;
+}
+
+.bk-layout--times > .bk-panel {
+  grid-column: 2 / span 2;
+  grid-row: 1 / span 2;
+  grid-template-columns: subgrid;
+  grid-template-rows: subgrid;
+  gap: 0;
+}
+
+.bk-layout--times .bk-panel__cal {
+  grid-row: 1;
+}
+
+/* Centred a touch above the middle, where the eye puts the centre. */
+.bk-layout--times .slip__middle {
+  padding-bottom: 20px;
+}
+
+.bk-layout--times .bk-panel__times {
+  grid-row: 1 / span 2;
+}
+
+.bk-panel,
+.bk-card {
+  min-width: 0;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+}
+
+.bk-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.16fr) minmax(0, 1fr);
+}
+
+.bk-panel > section {
+  min-width: 0;
+  padding: 28px 32px 26px;
+}
+
+.bk-panel__times {
+  border-left: 1px solid var(--line);
+}
+
+.bk-card {
+  padding: 30px 34px 30px;
+}
+
+.bk-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 24px;
+  margin-top: 20px;
+  padding-left: calc(312px + 24px);
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+
+.bk-foot .text-link {
+  display: inline-flex;
+  gap: 6px;
+  padding-bottom: 2px;
+  font-size: 13.5px;
+}
+
+/* --------------------------------------------- the reservation slip -- */
+
+.slip {
+  position: sticky;
+  top: 96px;
+  padding: 26px 26px 24px;
+  border-radius: var(--r-card);
+  background: var(--espresso);
+  box-shadow: var(--shadow-lift);
+}
+
+.slip__kicker {
+  font-size: var(--fs-11);
+}
+
+.slip__service {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.slip__name {
+  font: 400 28px / 1.1 var(--font-display);
+  letter-spacing: -0.015em;
+  color: var(--cream);
+}
+
+.ticket .slip__name {
+  margin-top: 12px;
+}
+
+.slip__change {
+  flex: none;
+  padding-bottom: 2px;
+  background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
+  font-size: var(--fs-13);
+  color: var(--cream-2);
+}
+
+@media (hover: hover) {
+  .slip__change:hover {
+    color: var(--cream);
+  }
+}
+
+.slip__change--time {
+  margin-top: 14px;
+}
+
+.slip__meta {
+  margin-top: 6px;
+  font-size: var(--fs-14);
+  color: var(--cream-2);
+}
+
+/* A perforation, with the paper showing through the notches. */
+.perf {
+  position: relative;
+  height: 1px;
+  margin: 22px -26px;
+  background-image: linear-gradient(90deg, var(--line-dark-2) 50%, transparent 50%);
+  background-size: 8px 1px;
+}
+
+.perf::before,
+.perf::after {
+  content: '';
+  position: absolute;
+  top: -9px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--paper);
+}
+
+.perf::before {
+  left: -9px;
+}
+
+.perf::after {
+  right: -9px;
+}
+
+/* The day and the time, centred between the perforations when the slip stands tall. */
+.slip__middle {
+  display: grid;
+  flex: 1 0 auto;
+  align-content: center;
+  justify-items: start;
+}
+
+.slip__date {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 14px;
+}
+
+.slip__numeral {
+  font: 300 64px / 0.8 var(--font-display);
+  letter-spacing: -0.04em;
+  font-variant-numeric: lining-nums;
+  color: var(--cream);
+}
+
+.slip__dow {
+  display: block;
+  font: 600 var(--fs-11) / 1.3 var(--font-text);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cream-2);
+}
+
+.slip__month {
+  display: block;
+  margin-top: 4px;
+  font: italic 400 21px / 1.15 var(--font-display);
+  color: var(--cream);
+  white-space: nowrap;
+}
+
+.slip__time {
+  margin-top: 22px;
+  font: 400 24px / 1.1 var(--font-display);
+  letter-spacing: -0.01em;
+  color: var(--cream);
+}
+
+.slip__empty {
+  font: italic 300 30px / 1.1 var(--font-display);
+  color: var(--cream-3);
+}
+
+.slip__empty--time {
+  margin-top: 16px;
+  font-size: 22px;
+}
+
+.slip__zone {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 13.5px;
+  color: var(--cream-2);
+}
+
+.slip__line {
+  display: flex;
+  gap: 10px;
+  font-size: var(--fs-13);
+  line-height: 1.5;
+  color: var(--cream-2);
+}
+
+.slip__line + .slip__line {
+  margin-top: 12px;
+}
+
+.slip__line .icon {
+  margin-top: 2px;
+  color: var(--accent-on-dark);
+}
+
+.ticket__ref {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+  font-size: var(--fs-13);
+  color: var(--cream-2);
+}
+
+.ticket__ref b {
+  font: 600 17px / 1 var(--font-text);
+  letter-spacing: 0.14em;
+  color: var(--cream);
+}
+
+/* Phones: the slip as one line above the form. */
+.mini-slip {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding: 14px 14px 14px 18px;
+  border-radius: var(--r-card);
+  background: var(--espresso);
+}
+
+.mini-slip__day {
+  min-width: 42px;
+  font: 300 42px / 0.8 var(--font-display);
+  letter-spacing: -0.03em;
+  color: var(--cream);
+}
+
+.mini-slip__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.mini-slip__text b {
+  display: block;
+  font: 400 18px / 1.2 var(--font-display);
+  color: var(--cream);
+}
+
+.mini-slip__text span {
+  display: block;
+  margin-top: 3px;
+  font-size: var(--fs-13);
+  color: var(--cream-2);
+}
+
+.mini-slip__change {
+  flex: none;
+  min-height: 44px;
+  padding: 0 6px;
+  font-size: var(--fs-13);
+  color: var(--cream-2);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.mini-slip__lock {
+  color: var(--accent-on-dark);
+}
+
+/* --------------------------------------------------------- service -- */
+
+.pick-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  align-items: start;
+  gap: 40px var(--gutter);
+}
+
+.pick-group__title {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--ink);
+  font: 600 var(--fs-12) / 1 var(--font-text);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.pick {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 32px;
+  column-gap: 14px;
+  width: 100%;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.pick::before {
+  content: '';
+  position: absolute;
+  inset: 0 -12px;
+  z-index: -1;
+  border-radius: var(--r-card);
+  background: var(--bone);
+  opacity: 0;
+}
+
+@media (hover: hover) {
+  .pick:hover::before {
+    opacity: 1;
+  }
+}
+
+.pick__line {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.pick__name {
+  font: 400 22px / 1.2 var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+.pick__leader {
+  flex: 1;
+  min-width: 16px;
+  border-bottom: 1px dotted var(--line-ctl);
+  transform: translateY(-5px);
+}
+
+.pick__price {
+  font: 400 22px / 1.2 var(--font-display);
+  font-variant-numeric: lining-nums;
+  white-space: nowrap;
+}
+
+.pick__price i {
+  margin-right: 2px;
+  font-size: var(--fs-15);
+  color: var(--ink-3);
+}
+
+.pick__meta {
+  grid-column: 1;
+  margin-top: 6px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+.pick__dur {
+  margin-right: 8px;
+  font-size: var(--fs-15);
+  font-weight: 650;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.pick__go {
+  display: grid;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  place-items: center;
+  align-self: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--ink-3);
+}
+
+@media (hover: hover) {
+  .pick:hover .pick__go {
+    color: var(--ink);
+  }
+}
+
+.pick[aria-pressed='true'] .pick__go {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* ------------------------------------------------------- calendar -- */
+
+.cal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 40px;
+}
+
+.cal__head--nav {
+  justify-content: flex-end;
+  min-height: 0;
+  margin-top: 6px;
+}
+
+.cal__month {
+  font: 400 27px / 1 var(--font-display);
+  letter-spacing: -0.015em;
+}
+
+.cal__month span {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--ink-3);
+}
+
+.cal__nav {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line-ctl);
+  border-radius: 50%;
+  color: var(--ink);
+}
+
+@media (hover: hover) {
+  .icon-btn:hover {
+    background: var(--bone);
+  }
+}
+
+.icon-btn[aria-disabled='true'] {
+  border-color: var(--line);
+  background: none;
+  color: var(--ink-4);
+  cursor: not-allowed;
+}
+
+.cal__grid {
+  margin-top: 16px;
+}
+
+.cal__row {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.cal__dow {
+  display: grid;
+  place-items: center;
+  height: 28px;
+  border-bottom: 1px solid var(--line-2);
+  font: 600 10.5px / 1 var(--font-text);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.cal__cell {
+  display: block;
+  min-width: 0;
+}
+
+.cal__grid .cal__cell {
+  min-height: 62px;
+  border-bottom: 1px solid var(--line);
+}
+
+/* A day: a serif numeral and at most one small mark under it, so the month
+   reads at a glance. Open: a copper dot. Few left: "2 left", in words.
+   Fully booked: struck through, receding. Closed: a quiet numeral, nothing
+   more. Past or beyond the booking window: faint. Today: a ring. The chosen
+   day: filled. Never colour alone — each state has its own shape, and every
+   day's accessible name says its date and state. */
+.day {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  row-gap: 5px;
+  width: 100%;
+  height: 62px;
+  font: 400 19px / 1 var(--font-display);
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--ink);
+}
+
+.day::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: -1;
+  width: 48px;
+  height: 48px;
+  margin: -24px 0 0 -24px;
+  border-radius: 50%;
+}
+
+.day__n {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  min-width: 26px;
+  height: 20px;
+}
+
+.day__mark {
+  display: grid;
+  place-items: center;
+  height: 8px;
+  font: 500 10px / 1 var(--font-text);
+  letter-spacing: 0.02em;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.day--open .day__mark::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* Closed: lighter in tone and in stroke. */
+.day--closed {
+  color: var(--ink-3);
+  font-weight: 300;
+}
+
+.day--full {
+  color: var(--ink-3);
+}
+
+.day--full .day__n::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -1px;
+  right: -1px;
+  height: 1px;
+  background: currentColor;
+  transform: rotate(-14deg);
+}
+
+.day--loading {
+  color: var(--ink-3);
+}
+
+.day--loading .day__mark::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--bone);
+}
+
+.day--out {
+  color: var(--ink-4);
+  cursor: default;
+}
+
+@media (hover: hover) {
+  .day:not(:disabled):not(.is-selected):hover::before {
+    background: var(--bone);
+  }
+}
+
+.day--today::before {
+  box-shadow: inset 0 0 0 1.5px var(--ink-2);
+}
+
+.day.is-selected {
+  color: var(--paper);
+}
+
+.day.is-selected::before {
+  background: var(--ink);
+  box-shadow: none;
+}
+
+.day.is-selected .day__mark {
+  color: var(--cream-2);
+}
+
+.day.is-selected.day--open .day__mark::before {
+  background: var(--paper);
+}
+
+.day:focus-visible {
+  outline: none;
+}
+
+.day:focus-visible::before {
+  box-shadow:
+    0 0 0 2px var(--card),
+    0 0 0 4px var(--focus);
+}
+
+/* What the marks mean */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 16px;
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+
+.legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.legend i {
+  font-style: normal;
+}
+
+.legend__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.legend__few {
+  font: 500 10px / 1 var(--font-text);
+  color: var(--accent);
+}
+
+.legend__full {
+  position: relative;
+  font: 400 14px / 1 var(--font-display);
+  color: var(--ink-3);
+}
+
+.legend__full::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -1px;
+  right: -1px;
+  height: 1px;
+  background: currentColor;
+  transform: rotate(-14deg);
+}
+
+.legend__closed {
+  font: 300 14px / 1 var(--font-display);
+  color: var(--ink-3);
+}
+
+.legend__today {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1.5px var(--ink-2);
+}
+
+.cal__error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: var(--r-card);
+  background: var(--bad-wash);
+  font-size: 13.5px;
+  color: var(--ink);
+}
+
+.cal__error .icon {
+  color: var(--bad);
+}
+
+.cal__error .text-link {
+  margin-left: auto;
+  font-size: 13.5px;
+}
+
+.soonest {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+
+.soonest b {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.soonest .text-link {
+  font-size: 13.5px;
+}
+
+/* ---------------------------------------------------------- times -- */
+
+.times__day {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  font: 400 24px / 1.1 var(--font-display);
+  letter-spacing: -0.012em;
+}
+
+.times__sub {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 6px;
+  font-size: var(--fs-13);
+  color: var(--ink-3);
+}
+
+.times__notice {
+  margin-top: 16px;
+}
+
+.times__notice .notice {
+  font-size: var(--fs-14);
+}
+
+/* Morning · Afternoon · Evening */
+.seg {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2px;
+  margin-top: 18px;
+  padding: 3px;
+  border: 1px solid var(--line-ctl);
+  border-radius: var(--r-pill);
+}
+
+.seg__opt {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 38px;
+  border-radius: var(--r-pill);
+  font: 500 13.5px / 1 var(--font-text);
+  color: var(--ink-2);
+}
+
+.seg__count {
+  font: italic 400 15px / 1 var(--font-display);
+  color: var(--ink-3);
+}
+
+.seg__opt[aria-selected='true'] {
+  background: var(--ink);
+  font-weight: 600;
+  color: var(--paper);
+}
+
+.seg__opt[aria-selected='true'] .seg__count {
+  color: var(--cream-2);
+}
+
+@media (hover: hover) {
+  .seg__opt:not([aria-selected='true']):not([aria-disabled='true']):hover {
+    background: var(--bone);
+    color: var(--ink);
+  }
+}
+
+.seg__opt[aria-disabled='true'] {
+  color: var(--ink-3);
+  cursor: not-allowed;
+}
+
+.seg__opt:focus-visible {
+  outline-offset: 1px;
+}
+
+.slots {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 14px;
+  margin-top: 12px;
+}
+
+.slots > li {
+  border-bottom: 1px solid var(--line);
+}
+
+.slot-row {
+  display: block;
+}
+
+/* A time: text, not a box; tabular figures and a smaller day period. */
+.slot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 48px;
+  padding: 0 12px;
+  border-radius: 6px;
+  font: 500 16px / 1 var(--font-text);
+  color: var(--ink);
+}
+
+.slot .ampm {
+  margin-left: 1px;
+  color: var(--ink-3);
+}
+
+@media (hover: hover) {
+  .slot:hover {
+    background: var(--bone);
+  }
+}
+
+/* The chosen time unfolds: "✓ 1:30 PM until 2:30 PM | Continue →". */
+.slots > li.slots__split {
+  grid-column: 1 / -1;
+  padding: 6px 0;
+  border-bottom: 0;
+}
+
+.split {
+  display: flex;
+  min-height: 52px;
+  border-radius: 8px;
+  box-shadow: 0 12px 26px -18px rgb(42 30 23 / 0.7);
+}
+
+.split__time {
+  flex: 1;
+  min-width: 0;
+  height: auto;
+  min-height: 52px;
+  padding: 0 14px;
+  border: 1.5px solid var(--ink);
+  border-right: 0;
+  border-radius: 8px 0 0 8px;
+  background: var(--paper);
+  font-weight: 600;
+}
+
+@media (hover: hover) {
+  .split__time:hover {
+    background: var(--paper);
+  }
+}
+
+.split__time .icon {
+  color: var(--accent);
+}
+
+.split__end {
+  margin-left: 2px;
+  font-size: 13.5px;
+  font-weight: 400;
+  color: var(--ink-2);
+}
+
+.split__go {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px 0 22px;
+  border-radius: 0 8px 8px 0;
+  background: var(--ink);
+  font: 600 15px / 1 var(--font-text);
+  color: var(--paper);
+}
+
+@media (hover: hover) {
+  .split__go:hover {
+    background: var(--btn-bg-hover);
+  }
+}
+
+.split__go:focus-visible,
+.split__time:focus-visible {
+  outline-offset: 2px;
+}
+
+.slot-gone {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 48px;
+  padding: 0 12px;
+  font-size: 16px;
+  color: var(--ink-3);
+}
+
+.slot-gone s {
+  text-decoration-thickness: 1px;
+}
+
+.slot-gone__tag {
+  font: 600 10px / 1 var(--font-text);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--wait);
+}
+
+/* A day without times: why, and where the next ones are. */
+.times-state {
+  display: grid;
+  justify-items: start;
+  margin-top: 28px;
+}
+
+.times-state__icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 1px solid var(--line-2);
+  border-radius: 50%;
+  color: var(--ink-2);
+}
+
+.times-state__title {
+  margin-top: 18px;
+  font: 400 26px / 1.15 var(--font-display);
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.times-state__title em {
+  color: var(--accent);
+}
+
+.times-state__body {
+  max-width: 38ch;
+  margin-top: 8px;
+  font-size: var(--fs-15);
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+.times-state__acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin-top: 20px;
+}
+
+.times-state--error .contact-links {
+  margin-top: 12px;
+}
+
+.next-av {
+  width: 100%;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line-2);
+}
+
+.next-av__kicker {
+  font-size: 10.5px;
+  color: var(--ink-3);
+}
+
+.next-av__none {
+  font-size: 14.5px;
+  color: var(--ink-2);
+}
+
+.next-av .contact-links {
+  margin-top: 8px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--line-ctl);
+  border-radius: var(--r-pill);
+  background: var(--card);
+  font: 500 14.5px / 1 var(--font-text);
+  color: var(--ink);
+}
+
+.chip .ampm {
+  color: var(--ink-3);
+}
+
+@media (hover: hover) {
+  .chip:hover {
+    border-color: var(--ink);
+  }
+}
+
+.chip--more {
+  border-style: dashed;
+  color: var(--ink-2);
+}
+
+/* Loading: the layout is held, nothing jumps when the times arrive. */
+.seg--ghost {
+  height: 46px;
+  border-color: var(--line);
+}
+
+.slots--ghost li {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 12px;
+}
+
+.sk {
+  display: block;
+  width: 52%;
+  height: 12px;
+  border-radius: 3px;
+  background: var(--bone);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sk,
+  .day--loading .day__mark::before {
+    background: linear-gradient(90deg, var(--bone) 0%, #f3ede3 50%, var(--bone) 100%);
+    background-size: 200% 100%;
+    animation: sheen 1.4s ease-in-out infinite;
+  }
+
+  @keyframes sheen {
+    from {
+      background-position: 150% 0;
+    }
+    to {
+      background-position: -50% 0;
+    }
+  }
+}
+
+/* ------------------------------------------------- details & code -- */
+
+.form__intro {
+  font-size: 13.5px;
+  color: var(--ink-3);
+}
+
+.form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 18px;
+  margin-top: 16px;
+}
+
+.field {
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  min-width: 0;
+}
+
+.field--full {
+  grid-column: 1 / -1;
+}
+
+.field__label {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font: 600 var(--fs-13) / 1.2 var(--font-text);
+  color: var(--ink);
+}
+
+.field__optional {
+  font-weight: 400;
+  color: var(--ink-3);
+}
+
+.input {
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 14px;
+  border: 1px solid var(--line-ctl);
+  border-radius: var(--r-field);
+  background: var(--card);
+  font-size: var(--fs-16);
+  color: var(--ink);
+}
+
+@media (hover: hover) {
+  .input:hover {
+    border-color: var(--ink-2);
+  }
+}
+
+.input:focus-visible {
+  border-color: var(--ink);
+  outline-offset: 2px;
+}
+
+.input--area {
+  min-height: 96px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.field--error .input {
+  border-color: var(--bad);
+  box-shadow: 0 0 0 3px var(--bad-wash);
+}
+
+.field__error {
+  display: flex;
+  gap: 7px;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--bad);
+}
+
+.field__error .icon {
+  margin-top: 1px;
+}
+
+.field__hint {
+  font-size: 12.5px;
+  color: var(--ink-3);
+}
+
+.field__count {
+  font-size: var(--fs-12);
+  color: var(--ink-3);
+  text-align: right;
+}
+
+.form__alert,
+.code-form__alert {
+  margin-top: 18px;
+}
+
+.form__alert:empty,
+.code-form__alert:empty {
+  display: none;
+}
+
+.form-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 18px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.form-foot__back {
+  margin-right: auto;
+}
+
+.form-foot__next {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+
+.form-foot__next .icon {
+  color: var(--ink-3);
+}
+
+.code-lede {
+  font-size: var(--fs-16);
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+.code-lede strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.code {
+  display: grid;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+/* One real input over six cells: typing, paste and one-time-code autofill all go to it. */
+.code__box {
+  position: relative;
+  width: max-content;
+  max-width: 100%;
+  border-radius: 12px;
+}
+
+.code__input {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 16px;
+  color: transparent;
+  caret-color: transparent;
+  opacity: 0;
+  cursor: text;
+}
+
+.code__box:has(.code__input:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 5px;
+}
+
+.code__cells {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.code__group-cell {
+  display: contents;
+}
+
+.code__cell {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 66px;
+  border: 1px solid var(--line-ctl);
+  border-radius: 10px;
+  background: var(--card);
+  font: 400 32px / 1 var(--font-display);
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--ink);
+}
+
+.code__dash {
+  width: 14px;
+  height: 1px;
+  margin: 0 2px;
+  background: var(--line-ctl);
+}
+
+.code__box:focus-within .code__cell.is-next {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.code__box:focus-within .code__cell.is-next:not(.is-filled)::after {
+  content: '';
+  width: 1.5px;
+  height: 30px;
+  background: var(--ink);
+}
+
+.code--error .code__cell {
+  border-color: var(--bad);
+}
+
+.hold-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  padding: 12px 14px;
+  border-radius: var(--r-card);
+  background: var(--bone);
+  font-size: var(--fs-14);
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+.hold-row b {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.hold-row .icon {
+  margin-top: 2px;
+  color: var(--wait);
+}
+
+.help-rows {
+  margin-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+/* icon · words · action */
+.help-row {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px 10px;
+  min-height: 52px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 14.5px;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+.help-row > .icon {
+  color: var(--ink-3);
+}
+
+.help-row > span:not(.help-row__act):last-child {
+  grid-column: 2 / -1;
+}
+
+.help-row__act {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.help-row__act .text-link {
+  font-size: 14.5px;
+}
+
+.help-row__wait {
+  font-size: var(--fs-13);
+  color: var(--ink-3);
+}
+
+.text-link[aria-disabled='true'] {
+  color: var(--ink-3);
+  cursor: not-allowed;
+}
+
+.code-next {
+  margin-top: 22px;
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+
+.code-next + .form-foot {
+  margin-top: 12px;
+}
+
+.form-foot--code {
+  justify-content: space-between;
+}
+
+.code__note {
+  margin-top: 12px;
+  font-size: var(--fs-14);
+  color: var(--ink-2);
+}
+
+.code__note:empty {
+  display: none;
+}
+
+/* ---------------------------------------------------------- result -- */
+
+.result__mark {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
+
+.result__mark--pending {
+  border: 1px dashed color-mix(in srgb, var(--wait) 60%, transparent);
+  background: var(--wait-wash);
+  color: var(--wait);
+}
+
+.result__mark--confirmed {
+  border: 1px solid color-mix(in srgb, var(--ok) 45%, transparent);
+  background: var(--ok-wash);
+  color: var(--ok);
+}
+
+.result .step-head {
+  display: block;
+  margin: 22px 0 0;
+}
+
+.result .step-head__title {
+  font-size: clamp(30px, 2.9vw, 42px);
+  line-height: 1.06;
+}
+
+.result__lede {
+  max-width: 54ch;
+  margin-top: 14px;
+  font-size: var(--fs-16);
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.result__lede b {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.result__where {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-size: 14.5px;
+  color: var(--ink-2);
+}
+
+.result__where .icon {
+  color: var(--ink-3);
+}
+
+.result__contact {
+  margin-top: 10px;
+  font-size: 14.5px;
+  color: var(--ink-2);
+}
+
+.result__acts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 24px;
+  margin-top: 24px;
+}
+
+/* A message instead of the flow (booking off, no backend, an error, loading). */
+.flow__body--message {
+  max-width: 640px;
+}
+
+.flow__body--message .step-head__title {
+  margin: 8px 0 28px;
+}
+
+/* ------------------------------------------- tablets: two columns -- */
+
+@media (max-width: 1119px) {
+  .bk-layout,
+  .bk-layout--form {
+    grid-template-columns: 260px minmax(0, 1fr);
+  }
+
+  .bk-panel {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* The slip as tall as the calendar; the times below both. */
+  .bk-layout--times > .bk-panel {
+    grid-column: 2;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .bk-layout--times .bk-panel__times {
+    grid-row: 2;
+  }
+
+  .bk-panel__times {
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+
+  .bk-foot {
+    padding-left: calc(260px + 24px);
+  }
+
+  .slip {
+    padding: 22px 22px 20px;
+  }
+
+  .perf {
+    margin-inline: -22px;
+  }
+
+  .slip__numeral {
+    font-size: 58px;
+  }
+
+  .route__step + .route__step::before {
+    width: 18px;
+    margin-inline: 2px 8px;
+  }
+
+  .route__step:not(.is-current) .route__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
+/* ------------------------------------- phones: a full-screen sheet -- */
+
+@media (max-width: 759px) {
+  .bv-head__bar {
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    gap: 4px;
+    width: auto;
+    height: 56px;
+    padding: 0 6px;
+  }
+
+  .bv-head__start {
+    display: contents;
+  }
+
+  .bv-head__back {
+    display: inline-grid;
+    grid-column: 1;
+  }
+
+  .bv-head__brand {
+    grid-column: 2;
+    justify-self: center;
+  }
+
+  .bv-head__brand .wordmark {
+    font-size: 21px;
+  }
+
+  .route {
+    display: none;
+  }
+
+  .bv-head__close {
+    grid-column: 3;
+    justify-content: center;
+    width: 44px;
+    padding: 0;
+  }
+
+  .bv-head__close-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .bv-progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 0 var(--margin) 12px;
+  }
+
+  .bv-progress__bars {
+    display: grid;
+    flex: 0 0 116px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+  }
+
+  .bv-progress__bars i {
+    height: 2px;
+    border-radius: 1px;
+    background: var(--line-2);
+  }
+
+  .bv-progress__bars i.is-done {
+    background: var(--accent);
+  }
+
+  .bv-progress__bars i.is-current {
+    background: var(--ink);
+  }
+
+  .bv-progress p {
+    font-size: 12.5px;
+    color: var(--ink-2);
+    text-align: right;
+  }
+
+  .bv-progress b {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .bv-progress__next {
+    display: none;
+  }
+
+  .flow__body {
+    padding: 20px 0 32px;
+  }
+
+  .step-head {
+    display: block;
+    margin-bottom: 18px;
+  }
+
+  .step-head__kicker {
+    display: none;
+  }
+
+  .step-head__title {
+    margin-top: 0;
+    font-size: clamp(30px, 8.8vw, 38px);
+  }
+
+  .step-head__aside {
+    margin-top: 10px;
+    padding: 0;
+  }
+
+  .bk-layout,
+  .bk-layout--form {
+    display: block;
+  }
+
+  .bk-card {
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  .pick-groups {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+
+  .pick__name,
+  .pick__price {
+    font-size: 20px;
+  }
+
+  /* Date & time: the service line, the week strip, the times, the bar. */
+  .svc-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 2px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    font-size: var(--fs-14);
+    color: var(--ink-2);
+  }
+
+  .svc-line b {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .m-cal {
+    margin-top: 18px;
+  }
+
+  .m-cal__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .m-cal__head .cal__month {
+    margin-right: auto;
+    font-size: 23px;
+    white-space: nowrap;
+  }
+
+  /* Month open: title, arrows and the toggle share one row. */
+  .m-cal__head:has(.cal__nav) {
+    gap: 8px;
+  }
+
+  .m-cal__head:has(.cal__nav) .cal__month {
+    font-size: 20px;
+  }
+
+  .m-cal__head:has(.cal__nav) .month-toggle {
+    padding: 0 12px;
+    gap: 6px;
+  }
+
+  .m-cal__head .cal__nav {
+    gap: 4px;
+  }
+
+  .m-cal__head .icon-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .month-toggle {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 7px;
+    height: 44px;
+    padding: 0 16px;
+    border: 1px solid var(--line-ctl);
+    border-radius: var(--r-pill);
+    font: 600 var(--fs-13) / 1 var(--font-text);
+    color: var(--ink);
+  }
+
+  .m-cal .cal__grid {
+    margin-top: 6px;
+  }
+
+  .m-cal .cal__grid .cal__cell {
+    min-height: 54px;
+  }
+
+  .m-cal .day {
+    height: 54px;
+    font-size: 18px;
+  }
+
+  .m-cal .day::before {
+    width: 44px;
+    height: 44px;
+    margin: -22px 0 0 -22px;
+  }
+
+  .week__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 6px;
+  }
+
+  .week__range {
+    font-size: var(--fs-13);
+    color: var(--ink-2);
+  }
+
+  .week__bar .cal__nav {
+    gap: 0;
+    margin-right: -10px;
+  }
+
+  .week__bar .icon-btn {
+    width: 44px;
+    height: 44px;
+    border: 0;
+  }
+
+  .week__grid {
+    padding: 6px 0 8px;
+    border-top: 1px solid var(--line-2);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .week__row {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+
+  .week .day {
+    height: 74px;
+    row-gap: 6px;
+    font-size: 20px;
+  }
+
+  /* In the strip the mark of a day is a tall pill around weekday, numeral and mark. */
+  .week .day::before {
+    width: min(46px, 94%);
+    height: 70px;
+    margin: 0;
+    border-radius: 23px;
+    transform: translate(-50%, -50%);
+  }
+
+  .day__dow {
+    font: 600 10px / 1 var(--font-text);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .day--out .day__dow {
+    color: var(--ink-4);
+  }
+
+  .day.is-selected .day__dow {
+    color: var(--cream-2);
+  }
+
+  .soonest {
+    margin-top: 10px;
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .m-times {
+    margin-top: 24px;
+  }
+
+  .times__day {
+    min-height: 0;
+    font-size: 23px;
+  }
+
+  .seg__opt {
+    height: 40px;
+    gap: 6px;
+    font-size: var(--fs-14);
+  }
+
+  .slots {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 6px;
+  }
+
+  .slot,
+  .slot-gone {
+    justify-content: center;
+    height: 50px;
+    padding: 0 4px;
+  }
+
+  .slot-gone {
+    flex-direction: column;
+    gap: 2px;
+    font-size: 15px;
+  }
+
+  .slot[aria-pressed='true'] {
+    border-radius: var(--r-pill);
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .slot[aria-pressed='true'] .ampm {
+    color: var(--cream-2);
+  }
+
+  .times-state {
+    margin-top: 18px;
+  }
+
+  .bk-note {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+    font-size: var(--fs-13);
+    line-height: 1.5;
+    color: var(--ink-3);
+  }
+
+  .bk-note .icon {
+    margin-top: 2px;
+  }
+
+  /* The choice and Continue, in thumb reach. */
+  .m-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 24px calc(-1 * var(--margin)) -32px;
+    padding: 14px var(--margin) calc(14px + env(safe-area-inset-bottom));
+    background: var(--espresso);
+    box-shadow: 0 -18px 40px -24px rgb(42 30 23 / 0.6);
+  }
+
+  .m-bar__text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .m-bar__text b {
+    display: block;
+    overflow: hidden;
+    font: 400 19px / 1.15 var(--font-display);
+    color: var(--cream);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .m-bar__text > span {
+    display: block;
+    overflow: hidden;
+    margin-top: 4px;
+    font-size: 12.5px;
+    color: var(--cream-2);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .m-bar__go {
+    flex: none;
+    min-height: 50px;
+    padding: 0 18px 0 20px;
+    gap: 10px;
+  }
+
+  /* Details and the code step. */
+  .form__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .form-foot {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .step--details .form-foot__back {
+    display: none;
+  }
+
+  .form-foot__back {
+    order: 3;
+    justify-content: center;
+    margin-right: 0;
+  }
+
+  .form-foot__next {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .form-foot__go {
+    width: 100%;
+  }
+
+  .code-next {
+    text-align: center;
+  }
+
+  .code__box,
+  .code__cells {
+    width: 100%;
+  }
+
+  .code__cells {
+    gap: 6px;
+  }
+
+  .code__cell {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    height: 60px;
+    font-size: 28px;
+  }
+
+  .code__dash {
+    flex: none;
+    width: 8px;
+    margin: 0;
+  }
+
+  /* Done: the message, then the ticket, then the way back. */
+  .bk-layout--done {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .bk-layout--done .result {
+    display: contents;
+  }
+
+  .result__mark {
+    order: 1;
+  }
+
+  .result .step-head {
+    order: 2;
+  }
+
+  .result__lede {
+    order: 3;
+  }
+
+  .bk-layout--done .ticket {
+    position: static;
+    order: 4;
+    margin-top: 24px;
+  }
+
+  .result__where {
+    order: 5;
+    margin-top: 24px;
+  }
+
+  .result__contact {
+    order: 6;
+  }
+
+  .result__acts {
+    order: 7;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .result__acts .btn {
+    width: 100%;
+  }
+
+  .result__acts .text-link {
+    justify-content: center;
+    align-self: center;
+  }
+}
+
+@media (max-width: 359px) {
+  .bv-head__brand .wordmark {
+    font-size: 18px;
+  }
+
+  .m-cal__head {
+    gap: 8px;
+  }
+
+  .m-cal__head .cal__month {
+    font-size: 19px;
+  }
+
+  .m-cal__head .icon-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* The toggle keeps its name for assistive tech, and its icon on screen. */
+  .month-toggle {
+    width: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .month-toggle__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .m-bar {
+    gap: 10px;
+  }
+
+  .m-bar__text b {
+    font-size: 17px;
+  }
+
+  .m-bar__zone {
+    display: none;
+  }
+
+  .m-bar__go {
+    padding: 0 14px 0 16px;
+  }
+
+  .m-bar__go .icon {
+    display: none;
+  }
+
+  .seg__opt {
+    font-size: var(--fs-13);
+  }
+
+  .help-row {
+    grid-template-columns: 18px minmax(0, 1fr);
+  }
+
+  .help-row__act {
+    grid-column: 2;
+    justify-content: flex-start;
+  }
+}
+
+/* ---------------------------------------------------------- motion -- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .bv[open] {
+    animation: view-in 320ms var(--ease-silk) both;
+  }
+
+  @keyframes view-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+  }
+
+  /* A new step rises in. */
+  .flow__body > .step {
+    animation: rise 420ms var(--ease-silk) both;
+  }
+
+  .day::before {
+    transition:
+      background-color 220ms var(--ease-silk),
+      box-shadow 220ms var(--ease-silk);
+  }
+
+  .day.is-selected::before {
+    animation: day-in 320ms var(--ease-silk) both;
+  }
+
+  .week .day.is-selected::before {
+    animation-name: pill-in;
+  }
+
+  @keyframes day-in {
+    from {
+      opacity: 0;
+      transform: scale(0.7);
+    }
+  }
+
+  @keyframes pill-in {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.8);
+    }
+  }
+
+  /* The day's times fade up when the day or the part of the day changes. */
+  .slots-panel {
+    animation: times-in 360ms var(--ease-silk) both;
+  }
+
+  @keyframes times-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+
+  .slot,
+  .seg__opt,
+  .chip,
+  .icon-btn,
+  .pick::before,
+  .pick__go {
+    transition:
+      background-color var(--d-ui) var(--ease-silk),
+      color var(--d-ui) var(--ease-silk),
+      border-color var(--d-ui) var(--ease-silk),
+      opacity var(--d-ui) var(--ease-silk);
+  }
+
+  /* The chosen time unfolds into "time | Continue". */
+  .split {
+    animation: split-open 300ms var(--ease-silk) both;
+  }
+
+  .split__go {
+    animation: go-in 320ms var(--ease-silk) 80ms backwards;
+  }
+
+  @keyframes split-open {
+    from {
+      clip-path: inset(0 55% 0 0 round 8px);
+    }
+    to {
+      clip-path: inset(0 0 0 0 round 8px);
+    }
+  }
+
+  @keyframes go-in {
+    from {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+  }
+
+  /* The slip re-sets its date and time with a short rise. */
+  .slip__date,
+  .slip__time {
+    animation: rise 420ms var(--ease-silk) both;
+  }
+
+  .m-bar {
+    animation: bar-in 360ms var(--ease-silk) both;
+  }
+
+  @keyframes bar-in {
+    from {
+      transform: translateY(100%);
+    }
+  }
+
+  .code__box:focus-within .code__cell.is-next:not(.is-filled)::after {
+    animation: caret 1s steps(1) infinite;
+  }
+
+  @keyframes caret {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  .field--error .input {
+    animation: nudge 320ms var(--ease-silk) 1;
+  }
+
+  @keyframes nudge {
+    25% {
+      transform: translateX(-3px);
+    }
+    75% {
+      transform: translateX(3px);
+    }
+  }
+}

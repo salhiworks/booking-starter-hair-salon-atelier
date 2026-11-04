@@ -1,0 +1,20 @@
+/*
+ * Copper & Comb's brand in the packaged Booking Engine dashboard.
+ * Since 2.0.0-alpha.9 the dashboard takes ONE brand hook: the accent (and the
+ * text colour on top of it), per appearance. It marks the primary action, the
+ * focus ring, selection and "now"; every tint is derived from it. Surfaces,
+ * text and status colours belong to the dashboard (INTEGRATION.md §10).
+ * `:root .pbe-admin` outranks the package's defaults regardless of order.
+ */
+
+/* Light: burnished copper — 7.2:1 on white; white text on it 7.2:1. */
+:root .pbe-admin[data-mode='light'] {
+  --pbe-accent: #8a4420;
+  --pbe-accent-text: #ffffff;
+}
+
+/* Dark: bright copper — 8.1:1 on the dark canvas; near-black text on it 8.0:1. */
+:root .pbe-admin[data-mode='dark'] {
+  --pbe-accent: #de9b66;
+  --pbe-accent-text: #1a1008;
+}

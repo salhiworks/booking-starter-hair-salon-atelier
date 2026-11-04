@@ -1,0 +1,138 @@
+/*
+ * Copper & Comb — design tokens ("Atelier": paper, ink and hairlines; one
+ * espresso spread; copper used sparingly). This look belongs to this salon
+ * only. Contrast ratios are WCAG 2.x, measured on the surface named.
+ */
+:root {
+  color-scheme: light;
+
+  /* Owner Customization (dashboard → Website → Brand), set by applyBrand():
+     the accent on paper (brand.accentLight, validated ≥ 4.5:1 on --paper) and
+     on espresso (brand.accentDark, validated ≥ 4.5:1 on --espresso). */
+  --burnished: #8a4420; /* 6.2:1 on paper · 5.6:1 on bone · 6.8:1 on card */
+  --copper-bright: #de9b66; /* 6.9:1 on espresso · 6.2:1 on espresso-2 */
+
+  /* Families. Newsreader: display and the numerals that matter (optical sizes
+     on, real italics). Instrument Sans: everything you read and press. */
+  --font-display: 'Newsreader Variable', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-text: 'Instrument Sans Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* brand.headings: "serif" (default) or "sans" — see the rule below. */
+  --font-heading: var(--font-display);
+
+  /* Surfaces */
+  --paper: #f4eee4; /* the page */
+  --bone: #eae2d4; /* second paper: kind words, hover, skeletons */
+  --card: #fbf8f2; /* fields, the reservation card */
+  --espresso: #2a1e17; /* the one dark spread, the slip */
+  --espresso-2: #35271f;
+
+  /* Ink on paper */
+  --ink: #241a14; /* 14.8:1 */
+  --ink-2: #594a3f; /* 7.4:1 */
+  --ink-3: #6f5f54; /* 5.3:1 (4.8 on bone) */
+  --ink-4: rgb(36 26 20 / 0.32); /* past days and inactive controls only */
+  /* Cream on espresso */
+  --cream: #f2eadd; /* 13.6:1 */
+  --cream-2: #cdbfae; /* 9.0:1 */
+  --cream-3: #a89888; /* 5.8:1 */
+
+  --accent: var(--burnished);
+  --accent-on-dark: var(--copper-bright);
+
+  /* Lines */
+  --line: rgb(36 26 20 / 0.13);
+  --line-2: rgb(36 26 20 / 0.24);
+  --line-ctl: #897c6f; /* control boundaries: 3.5:1 on paper, 3.8:1 on card */
+  --line-dark: rgb(242 234 221 / 0.16);
+  --line-dark-2: rgb(242 234 221 / 0.3);
+
+  /* Status — fixed, never the brand colour; always with a word or a shape */
+  --ok: #2d6047; /* 6.3:1 on paper */
+  --ok-wash: #e2eae0;
+  --wait: #87570b; /* 5.0:1 on its wash */
+  --wait-wash: #f3e6cc;
+  --bad: #9a3324; /* 6.3:1 on paper, 5.8:1 on its wash */
+  --bad-wash: #f4e0d9;
+
+  /* Type scale (px; the display sizes are set per element) */
+  --fs-11: 0.6875rem;
+  --fs-12: 0.75rem;
+  --fs-13: 0.8125rem;
+  --fs-14: 0.875rem;
+  --fs-15: 0.9375rem;
+  --fs-16: 1rem;
+  --fs-17: 1.0625rem;
+  --fs-19: 1.1875rem;
+
+  /* Space: an 8 px rhythm */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --sp-9: 96px;
+  --sp-10: 128px;
+
+  /* Grid: 12 columns; 64 px margins and 32 px gutters at 1440 */
+  --margin: clamp(20px, 4.45vw, 64px);
+  --gutter: clamp(16px, 2.2vw, 32px);
+  --max: 1440px;
+  --header-h: 72px;
+
+  /* Radii: plates are square; controls are pills or soft */
+  --r-plate: 0;
+  --r-field: 8px;
+  --r-card: 6px;
+  --r-pill: 999px;
+
+  /* Motion: slow and silky — and all of it opt-in (prefers-reduced-motion) */
+  --ease-silk: cubic-bezier(0.22, 0.61, 0.12, 1);
+  --d-ui: 220ms;
+  --d-silk: 560ms;
+  --d-reveal: 760ms;
+
+  --shadow-lift: 0 30px 60px -36px rgb(42 30 23 / 0.45), 0 1px 2px rgb(42 30 23 / 0.06);
+  --shadow-float: 0 18px 40px -24px rgb(42 30 23 / 0.5);
+
+  /* Roles (light surfaces by default; .surface-dark flips them) */
+  --fg: var(--ink);
+  --fg-2: var(--ink-2);
+  --fg-3: var(--ink-3);
+  --rule: var(--line);
+  --rule-2: var(--line-2);
+  --accent-text: var(--accent);
+  --focus: var(--accent);
+  --btn-bg: var(--ink);
+  --btn-bg-hover: #3a2b21;
+  --btn-fg: var(--paper);
+}
+
+@media (max-width: 959px) {
+  :root {
+    --header-h: 60px;
+  }
+}
+
+/* Owner's heading style "sans" (dashboard → Website → Brand): Instrument Sans
+   for headings; italic endings stay in Newsreader (see base.css). */
+:root[data-headings='sans'] {
+  --font-heading: var(--font-text);
+}
+
+/* The espresso spread, the booking slip and anything else set on espresso. */
+.surface-dark {
+  --fg: var(--cream);
+  --fg-2: var(--cream-2);
+  --fg-3: var(--cream-3);
+  --rule: var(--line-dark);
+  --rule-2: var(--line-dark-2);
+  --accent-text: var(--accent-on-dark);
+  --focus: var(--accent-on-dark);
+  --btn-bg: var(--cream);
+  --btn-bg-hover: #fffaf2;
+  --btn-fg: var(--espresso);
+  color: var(--fg);
+}
