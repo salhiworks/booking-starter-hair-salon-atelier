@@ -6,9 +6,9 @@ import { PhotoFrame } from './PhotoFrame';
 
 /** Work photos for the sample profiles (hands at work, never a face): no invented staff. */
 const SAMPLE_PHOTOS: SiteImage[] = [
-  { src: '/photos/sample-color-922.webp', alt: 'Sample photo: a colorist’s hands painting caramel balayage onto long brown hair', width: 922, height: 1152 },
-  { src: '/photos/sample-precision-922.webp', alt: 'Sample photo: a stylist refining a short cut at the nape with comb and scissors', width: 922, height: 1152 },
-  { src: '/photos/sample-curls-922.webp', alt: 'Sample photo: a stylist’s hands shaping defined natural curls with cream', width: 922, height: 1152 },
+  { src: '/photos/sample-color-922.webp', alt: 'Sample photo: a gloved hand lifting a section of freshly colored brown hair', width: 922, height: 1153 },
+  { src: '/photos/sample-precision-922.webp', alt: 'Sample photo: a stylist’s hands holding comb and scissors over long blonde lengths', width: 922, height: 1153 },
+  { src: '/photos/sample-curls-922.webp', alt: 'Sample photo: a stylist diffusing natural curls against a blush-pink wall', width: 922, height: 1153 },
 ];
 
 /**
@@ -47,7 +47,7 @@ export function TeamSection() {
           {members.map((member, index) => (
             <li className="member" key={`${index}-${member.name}`}>
               <PhotoFrame
-                className="member__photo plate--hover"
+                className="member__photo plate--arch plate--hover"
                 image={sample ? (SAMPLE_PHOTOS[index % SAMPLE_PHOTOS.length] ?? null) : member.portrait}
                 badge={sample ? 'Sample photo' : undefined}
                 fallback={initials(member.name)}

@@ -2,6 +2,7 @@ import { Mail, MapPin, Phone, RefreshCw } from 'lucide-react';
 import { isDifferentTimeZone, todayInTimeZone, weekdayOf } from '@profitstudio/booking-engine';
 import { plateLabel, useContent } from '../lib/content';
 import { WEEKDAYS, formatInterval, hoursByWeekday, mapsHref, telHref, timeZoneLabel, weekdayName } from '../lib/format';
+import { engine } from '../lib/engine';
 import { readErrorCopy } from '../lib/messages';
 import { useSectionNumber } from '../lib/sections';
 import { useSiteData } from '../lib/siteData';
@@ -18,6 +19,8 @@ export function VisitSection() {
   const number = useSectionNumber('visit');
   const { business, reloadBusiness } = useSiteData();
   const status = useTodayStatus();
+  // The Live Demo and preview mode show a made-up business: say so where people look for it.
+  const sampleBusiness = __BOOKING_DEMO__ || engine.mode === 'preview';
 
   let body;
   if (business.state === 'loading') {
@@ -136,8 +139,13 @@ export function VisitSection() {
             <span className="kicker">Visit</span>
           </p>
           <h2 id="visit-title" className="display sec-title">
-            Come by
+            Come <em>by</em>
           </h2>
+          {sampleBusiness && business.state === 'ready' ? (
+            <p className="visit__sample">
+              <span className="tag">Sample</span> A fictional salon: this address, phone number and email are examples.
+            </p>
+          ) : null}
           {body}
         </div>
       </div>

@@ -22,13 +22,13 @@ export function useContent(): Content {
 
 /**
  * The owner's brand, mapped onto this design's own tokens (styles/tokens.css):
- * --burnished is the accent on paper, --copper-bright the accent on espresso;
+ * --rose is the accent on paper, --rose-bright the accent on espresso;
  * data-headings picks the heading face. Values are validated colours / known options.
  */
 export function applyBrand(values: Values) {
   const root = document.documentElement;
-  root.style.setProperty('--burnished', values['brand.accentLight']);
-  root.style.setProperty('--copper-bright', values['brand.accentDark']);
+  root.style.setProperty('--rose', values['brand.accentLight']);
+  root.style.setProperty('--rose-bright', values['brand.accentDark']);
   root.dataset.headings = values['brand.headings'];
 }
 
@@ -45,11 +45,9 @@ export function applyMeta(values: Values) {
 }
 
 const PLATES = ['hero.photo', 'studio.photo', 'studio.detailPhoto', 'visit.photo'] as const;
-const ROMAN = ['I', 'II', 'III', 'IV'];
-
-/** "Plate III": photos are numbered in page order, skipping any the owner removed. */
+/** "No. 03": photos are numbered in page order, skipping any the owner removed. */
 export function plateLabel(values: Values, id: (typeof PLATES)[number]): string {
   const shown = PLATES.filter((key) => values[key]);
   const index = shown.indexOf(id);
-  return index < 0 ? '' : `Plate ${ROMAN[index]}`;
+  return index < 0 ? '' : `No. ${String(index + 1).padStart(2, '0')}`;
 }

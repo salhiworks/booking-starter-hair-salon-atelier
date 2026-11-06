@@ -40,7 +40,7 @@ export function Slip({
 
   if (compact) {
     return (
-      <aside className="mini-slip surface-dark" aria-label="Your appointment">
+      <aside className="mini-slip" aria-label="Your appointment">
         <span className="mini-slip__day" aria-hidden="true">
           {date ? formatDate(date, locale, { day: 'numeric' }) : '—'}
         </span>
@@ -69,7 +69,7 @@ export function Slip({
   }
 
   return (
-    <aside className="slip surface-dark" aria-label="Your appointment">
+    <aside className="slip" aria-label="Your appointment">
       <p className="kicker slip__kicker">Your appointment</p>
       <div className="slip__service">
         <p className="slip__name">{service.name}</p>

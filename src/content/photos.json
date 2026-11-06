@@ -1,12 +1,12 @@
 {
-  "hero": {
+  "hero-curls": {
     "widths": [
       480,
       720,
-      922
+      960
     ],
-    "width": 922,
-    "height": 1152
+    "width": 960,
+    "height": 1200
   },
   "studio-wide": {
     "widths": [
@@ -17,7 +17,7 @@
     "width": 1728,
     "height": 1152
   },
-  "color-bar": {
+  "salon-arch": {
     "widths": [
       400,
       640,
@@ -33,7 +33,7 @@
       922
     ],
     "width": 922,
-    "height": 1152
+    "height": 1153
   },
   "sample-precision": {
     "widths": [
@@ -42,7 +42,7 @@
       922
     ],
     "width": 922,
-    "height": 1152
+    "height": 1153
   },
   "sample-curls": {
     "widths": [
@@ -51,7 +51,7 @@
       922
     ],
     "width": 922,
-    "height": 1152
+    "height": 1153
   },
   "storefront": {
     "widths": [

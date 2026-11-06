@@ -92,7 +92,7 @@ export function BookingSection() {
       <>
         <p className="cta__lede">Choose a service, a day and a time. We hold your time while you confirm your email.</p>
         <div className="cta__row">
-          <BookLink className="btn btn--ink">
+          <BookLink className="btn btn--ink cta__book">
             Book an appointment
             <Icon icon={ArrowRight} size={18} className="icon--forward" />
           </BookLink>
@@ -110,7 +110,7 @@ export function BookingSection() {
   }
 
   return (
-    <section id="book" className="section cta" aria-labelledby="book-title" ref={ref}>
+    <section id="book" className="section cta surface-dark" aria-labelledby="book-title" ref={ref}>
       <div className="wrap cta__inner">
         <p className="kicker">Book online</p>
         <h2 id="book-title" className="display cta__title">

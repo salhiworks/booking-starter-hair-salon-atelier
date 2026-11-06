@@ -4,7 +4,7 @@ A finished, premium booking website for a hair salon, ready to make your own
 with Claude Code and publish on Hostinger. It ships as **Copper & Comb**, a
 fictional salon in Portland, Oregon:
 
-- a one-page editorial website (services and prices, the studio, stylists,
+- a one-page beauty-editorial website (services and prices, the studio, stylists,
   reviews, FAQ, opening hours, map link) that works from 320 px phones up;
 - online booking — service, calendar, time, details and an emailed 6-digit code;
 - the owner dashboard at `/admin/` — appointments, requests to confirm,
@@ -77,12 +77,13 @@ Push this project to a private GitHub repository, then in Hostinger create a
 | `src/site.config.ts` | The business name, time zone and preview address |
 | `src/content/site.ts` | Everything the owner can edit in the dashboard → Website, with its default text and photos |
 | `src/styles/tokens.css` | The design's colours, type and spacing (one file) |
+| `DESIGN.md` | The visual system ("The Mirror"): type, colour and contrast, composition, the booking sheet |
 | `src/components/`, `src/booking/` | The website and its booking flow |
 | `admin/` + `src/admin-main.tsx` | The packaged dashboard, mounted at `/admin/` |
 | `src/demo/` | The Live Demo's in-browser engine and sample data — used only by `dev:demo` / `build:demo`; a normal build contains none of it |
 | `supabase/` | The engine's database migrations and email function (managed by `npx booking-engine`; do not edit) |
 | `CLAUDE.md`, `BOOKING_ENGINE.md` | Rules Claude Code follows in this project |
-| `PHOTOS.md` | Where every photo came from (all AI-generated for this starter) |
+| `PHOTOS.md` | Where every photo came from (5 Pexels photos, 2 AI-generated) and the rules they follow |
 
 ## Commands
 

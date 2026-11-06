@@ -7,14 +7,14 @@
  * `:root .pbe-admin` outranks the package's defaults regardless of order.
  */
 
-/* Light: burnished copper — 7.2:1 on white; white text on it 7.2:1. */
+/* Light: rosewood (the site's accent) — 6.4:1 on white; white text on it 6.4:1. */
 :root .pbe-admin[data-mode='light'] {
-  --pbe-accent: #8a4420;
+  --pbe-accent: #98463f;
   --pbe-accent-text: #ffffff;
 }
 
-/* Dark: bright copper — 8.1:1 on the dark canvas; near-black text on it 8.0:1. */
+/* Dark: petal pink — 8.9:1 on the dark canvas; cocoa text on it 9.4:1. */
 :root .pbe-admin[data-mode='dark'] {
-  --pbe-accent: #de9b66;
-  --pbe-accent-text: #1a1008;
+  --pbe-accent: #e7a99b;
+  --pbe-accent-text: #1a0f10;
 }

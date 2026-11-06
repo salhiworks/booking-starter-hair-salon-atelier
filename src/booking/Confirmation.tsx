@@ -56,7 +56,7 @@ export function Confirmation({
       : null;
 
   const ticket = (
-    <aside className="slip ticket surface-dark" aria-label="Your appointment">
+    <aside className="slip ticket" aria-label="Your appointment">
       <p className="kicker slip__kicker">{pending ? 'Requested' : 'Booked'}</p>
       <p className="slip__name">{confirmation.serviceName}</p>
       {service ? (

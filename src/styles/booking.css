@@ -1,38 +1,48 @@
 /*
- * Copper & Comb — booking. Studio's interaction model (summary · month ·
- * grouped times, a week strip on phones) dressed in the site's own Atelier
- * tokens: paper, hairlines, serif numerals, an espresso reservation slip.
+ * Copper & Comb — booking. A sheet over the page: centred and rounded on
+ * wide screens (the page stays dimly in view behind it), a full-height sheet
+ * with rounded shoulders on phones. Summary · month · grouped times (a week
+ * strip on phones), dressed in "The Mirror": porcelain, a blush appointment
+ * card, pill-shaped days and times, Bodoni numerals.
  */
 
 /* ------------------------------------------------------------ the view -- */
 
 .bv {
+  --sheet-pad: clamp(20px, 3.2vw, 44px);
   position: fixed;
   inset: 0;
-  width: 100%;
+  width: min(1180px, 100% - 48px);
   max-width: none;
-  height: 100dvh;
+  height: min(100dvh - 48px, 1000px);
   max-height: none;
-  margin: 0;
+  margin: auto;
   padding: 0;
   border: 0;
+  border-radius: 30px;
   background: var(--paper);
   color: var(--ink);
+  box-shadow: 0 50px 120px -40px rgb(46 28 30 / 0.55);
   overflow-y: auto;
   overscroll-behavior: contain;
   scroll-padding-top: 120px;
 }
 
+/* The page stays in view behind the sheet, dimmed and softened. */
 .bv::backdrop {
-  background: var(--paper);
+  background: rgb(46 28 30 / 0.42);
+  -webkit-backdrop-filter: blur(6px) saturate(0.9);
+  backdrop-filter: blur(6px) saturate(0.9);
 }
 
 .bv-head {
   position: sticky;
   top: 0;
   z-index: 6;
-  background: var(--paper);
+  background: rgb(248 242 238 / 0.94);
   border-bottom: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .bv-head__bar {
@@ -40,7 +50,7 @@
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   gap: 24px;
-  width: min(100% - 2 * var(--margin), var(--max) - 2 * 64px);
+  width: calc(100% - 2 * var(--sheet-pad));
   height: 72px;
   margin-inline: auto;
 }
@@ -155,9 +165,9 @@
 }
 
 .flow__body {
-  width: min(100% - 2 * var(--margin), var(--max) - 2 * 64px);
+  width: calc(100% - 2 * var(--sheet-pad));
   margin-inline: auto;
-  padding: 40px 0 64px;
+  padding: 36px 0 56px;
 }
 
 .flow__preview {
@@ -319,8 +329,7 @@
   top: 96px;
   padding: 26px 26px 24px;
   border-radius: var(--r-card);
-  background: var(--espresso);
-  box-shadow: var(--shadow-lift);
+  background: var(--blush);
 }
 
 .slip__kicker {
@@ -338,7 +347,7 @@
 .slip__name {
   font: 400 28px / 1.1 var(--font-display);
   letter-spacing: -0.015em;
-  color: var(--cream);
+  color: var(--ink);
 }
 
 .ticket .slip__name {
@@ -350,12 +359,12 @@
   padding-bottom: 2px;
   background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
   font-size: var(--fs-13);
-  color: var(--cream-2);
+  color: var(--ink-2);
 }
 
 @media (hover: hover) {
   .slip__change:hover {
-    color: var(--cream);
+    color: var(--ink);
   }
 }
 
@@ -366,7 +375,7 @@
 .slip__meta {
   margin-top: 6px;
   font-size: var(--fs-14);
-  color: var(--cream-2);
+  color: var(--ink-2);
 }
 
 /* A perforation, with the paper showing through the notches. */
@@ -374,7 +383,7 @@
   position: relative;
   height: 1px;
   margin: 22px -26px;
-  background-image: linear-gradient(90deg, var(--line-dark-2) 50%, transparent 50%);
+  background-image: linear-gradient(90deg, var(--line-ctl) 50%, transparent 50%);
   background-size: 8px 1px;
 }
 
@@ -413,25 +422,26 @@
 }
 
 .slip__numeral {
-  font: 300 64px / 0.8 var(--font-display);
-  letter-spacing: -0.04em;
+  font: 400 64px / 0.8 var(--font-display);
+  font-variation-settings: 'opsz' 96;
+  letter-spacing: -0.02em;
   font-variant-numeric: lining-nums;
-  color: var(--cream);
+  color: var(--ink);
 }
 
 .slip__dow {
   display: block;
-  font: 600 var(--fs-11) / 1.3 var(--font-text);
-  letter-spacing: 0.14em;
+  font: 500 var(--fs-11) / 1.3 var(--font-text);
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--cream-2);
+  color: var(--ink-2);
 }
 
 .slip__month {
   display: block;
   margin-top: 4px;
   font: italic 400 21px / 1.15 var(--font-display);
-  color: var(--cream);
+  color: var(--ink);
   white-space: nowrap;
 }
 
@@ -439,12 +449,12 @@
   margin-top: 22px;
   font: 400 24px / 1.1 var(--font-display);
   letter-spacing: -0.01em;
-  color: var(--cream);
+  color: var(--ink);
 }
 
 .slip__empty {
-  font: italic 300 30px / 1.1 var(--font-display);
-  color: var(--cream-3);
+  font: italic 400 28px / 1.1 var(--font-display);
+  color: var(--ink-3);
 }
 
 .slip__empty--time {
@@ -458,7 +468,7 @@
   gap: 8px;
   margin-top: 8px;
   font-size: 13.5px;
-  color: var(--cream-2);
+  color: var(--ink-2);
 }
 
 .slip__line {
@@ -466,7 +476,7 @@
   gap: 10px;
   font-size: var(--fs-13);
   line-height: 1.5;
-  color: var(--cream-2);
+  color: var(--ink-2);
 }
 
 .slip__line + .slip__line {
@@ -475,7 +485,7 @@
 
 .slip__line .icon {
   margin-top: 2px;
-  color: var(--accent-on-dark);
+  color: var(--accent);
 }
 
 .ticket__ref {
@@ -485,13 +495,13 @@
   justify-content: space-between;
   gap: 4px 16px;
   font-size: var(--fs-13);
-  color: var(--cream-2);
+  color: var(--ink-2);
 }
 
 .ticket__ref b {
   font: 600 17px / 1 var(--font-text);
   letter-spacing: 0.14em;
-  color: var(--cream);
+  color: var(--ink);
 }
 
 /* Phones: the slip as one line above the form. */
@@ -502,14 +512,14 @@
   margin-bottom: 20px;
   padding: 14px 14px 14px 18px;
   border-radius: var(--r-card);
-  background: var(--espresso);
+  background: var(--blush);
 }
 
 .mini-slip__day {
   min-width: 42px;
-  font: 300 42px / 0.8 var(--font-display);
-  letter-spacing: -0.03em;
-  color: var(--cream);
+  font: 400 42px / 0.8 var(--font-display);
+  letter-spacing: -0.02em;
+  color: var(--ink);
 }
 
 .mini-slip__text {
@@ -520,14 +530,14 @@
 .mini-slip__text b {
   display: block;
   font: 400 18px / 1.2 var(--font-display);
-  color: var(--cream);
+  color: var(--ink);
 }
 
 .mini-slip__text span {
   display: block;
   margin-top: 3px;
   font-size: var(--fs-13);
-  color: var(--cream-2);
+  color: var(--ink-2);
 }
 
 .mini-slip__change {
@@ -535,13 +545,13 @@
   min-height: 44px;
   padding: 0 6px;
   font-size: var(--fs-13);
-  color: var(--cream-2);
+  color: var(--ink-2);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
 .mini-slip__lock {
-  color: var(--accent-on-dark);
+  color: var(--accent);
 }
 
 /* --------------------------------------------------------- service -- */
@@ -578,7 +588,7 @@
   inset: 0 -12px;
   z-index: -1;
   border-radius: var(--r-card);
-  background: var(--bone);
+  background: var(--blush);
   opacity: 0;
 }
 
@@ -703,7 +713,7 @@
 
 @media (hover: hover) {
   .icon-btn:hover {
-    background: var(--bone);
+    background: var(--blush);
   }
 }
 
@@ -832,7 +842,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--bone);
+  background: var(--blush);
 }
 
 .day--out {
@@ -842,7 +852,7 @@
 
 @media (hover: hover) {
   .day:not(:disabled):not(.is-selected):hover::before {
-    background: var(--bone);
+    background: var(--blush);
   }
 }
 
@@ -1048,7 +1058,7 @@
 
 @media (hover: hover) {
   .seg__opt:not([aria-selected='true']):not([aria-disabled='true']):hover {
-    background: var(--bone);
+    background: var(--blush);
     color: var(--ink);
   }
 }
@@ -1097,7 +1107,7 @@
 
 @media (hover: hover) {
   .slot:hover {
-    background: var(--bone);
+    background: var(--blush);
   }
 }
 
@@ -1310,13 +1320,13 @@
   width: 52%;
   height: 12px;
   border-radius: 3px;
-  background: var(--bone);
+  background: var(--blush);
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .sk,
   .day--loading .day__mark::before {
-    background: linear-gradient(90deg, var(--bone) 0%, #f3ede3 50%, var(--bone) 100%);
+    background: linear-gradient(90deg, var(--blush) 0%, #f3ede3 50%, var(--blush) 100%);
     background-size: 200% 100%;
     animation: sheen 1.4s ease-in-out infinite;
   }
@@ -1560,7 +1570,7 @@
   margin-top: 20px;
   padding: 12px 14px;
   border-radius: var(--r-card);
-  background: var(--bone);
+  background: var(--blush);
   font-size: var(--fs-14);
   line-height: 1.5;
   color: var(--ink-2);
@@ -1792,6 +1802,15 @@
 /* ------------------------------------- phones: a full-screen sheet -- */
 
 @media (max-width: 759px) {
+  .bv {
+    --sheet-pad: var(--margin);
+    inset: 10px 0 0;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    border-radius: 22px 22px 0 0;
+  }
+
   .bv-head__bar {
     grid-template-columns: 44px minmax(0, 1fr) 44px;
     gap: 4px;
@@ -2156,7 +2175,7 @@
     gap: 14px;
     margin: 24px calc(-1 * var(--margin)) -32px;
     padding: 14px var(--margin) calc(14px + env(safe-area-inset-bottom));
-    background: var(--espresso);
+    background: var(--cocoa);
     box-shadow: 0 -18px 40px -24px rgb(42 30 23 / 0.6);
   }
 
@@ -2374,13 +2393,23 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .bv[open] {
-    animation: view-in 320ms var(--ease-silk) both;
+    animation: view-in 420ms var(--ease-silk) both;
+  }
+
+  .bv[open]::backdrop {
+    animation: backdrop-in 420ms var(--ease-silk) both;
   }
 
   @keyframes view-in {
     from {
       opacity: 0;
-      transform: translateY(12px);
+      transform: translateY(28px) scale(0.985);
+    }
+  }
+
+  @keyframes backdrop-in {
+    from {
+      opacity: 0;
     }
   }
 
@@ -2504,5 +2533,259 @@
     75% {
       transform: translateX(3px);
     }
+  }
+}
+
+/* ===================================================== The Mirror finish -- */
+/* The sheet's own finish over the shared structure above: pill days and
+   times, the rosewood selection, the services as soft cards, a quieter head. */
+
+.route__step.is-current .route__mark {
+  border-color: var(--rose);
+  background: var(--rose);
+  color: #fff;
+}
+
+.route__step.is-done .route__mark {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.flow__preview {
+  margin-bottom: 18px;
+  font-size: var(--fs-13);
+}
+
+.step-head {
+  margin-bottom: 28px;
+}
+
+.step-head__title {
+  margin-top: 12px;
+  font-size: clamp(34px, 3.4vw, 48px);
+  font-variation-settings: 'opsz' 72;
+}
+
+/* Service: each group a soft card; a row warms to blush under the pointer. */
+.pick-groups {
+  gap: var(--gutter);
+}
+
+.pick-group {
+  padding: 24px 26px 14px;
+  border-radius: var(--r-card);
+  background: var(--card);
+  box-shadow: var(--shadow-soft);
+}
+
+.pick-group__title {
+  border-bottom-color: var(--line-2);
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  color: var(--accent);
+}
+
+.pick:last-child,
+.pick-list > li:last-child .pick {
+  border-bottom: 0;
+}
+
+.pick__name,
+.pick__price {
+  font-variation-settings: 'opsz' 28;
+}
+
+.pick__dur {
+  font-size: 11.5px;
+  font-weight: 500;
+  font-variant-caps: normal;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.pick__go {
+  border: 1px solid var(--line-2);
+}
+
+@media (hover: hover) {
+  .pick:hover .pick__go {
+    border-color: var(--rose);
+    background: var(--rose);
+    color: #fff;
+  }
+}
+
+.pick[aria-pressed='true'] .pick__go {
+  border-color: var(--rose);
+  background: var(--rose);
+  color: #fff;
+}
+
+/* Days: the chosen one is filled rosewood. */
+.day.is-selected {
+  color: #fff;
+}
+
+.day.is-selected::before {
+  background: var(--rose);
+}
+
+.day.is-selected .day__mark,
+.day.is-selected .day__dow {
+  color: rgb(255 255 255 / 0.86);
+}
+
+.day.is-selected.day--open .day__mark::before {
+  background: #fff;
+}
+
+.bk-panel,
+.bk-card {
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Times: pills you can tap, in a calm grid. */
+.slots {
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.slots > li {
+  border-bottom: 0;
+}
+
+.slot,
+.slot-gone {
+  justify-content: center;
+  height: 48px;
+  padding: 0 10px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-pill);
+  background: var(--card);
+  font: 500 16px / 1 var(--font-text);
+}
+
+.slot-gone {
+  flex-direction: column;
+  gap: 2px;
+  border-style: dashed;
+  background: transparent;
+  font-size: 14px;
+}
+
+@media (hover: hover) {
+  .slot:hover {
+    border-color: var(--rose);
+    background: var(--card);
+    color: var(--rose);
+  }
+}
+
+.slot[aria-pressed='true'] {
+  border-color: var(--rose);
+  background: var(--rose);
+  color: #fff;
+}
+
+.slot[aria-pressed='true'] .ampm {
+  color: rgb(255 255 255 / 0.86);
+}
+
+/* The chosen time unfolds into a small card: "✓ 1:30 PM until 2:30 PM" over "Continue →". */
+.split {
+  flex-direction: column;
+  border-radius: 24px;
+  box-shadow: 0 16px 34px -20px rgb(152 70 63 / 0.75);
+}
+
+.split__time,
+.split__time[aria-pressed='true'] {
+  justify-content: center;
+  height: auto;
+  min-height: 50px;
+  padding: 0 16px;
+  border: 1.5px solid var(--rose);
+  border-bottom: 0;
+  border-radius: 24px 24px 0 0;
+  background: var(--card);
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.split__time[aria-pressed='true'] .ampm {
+  color: var(--ink-3);
+}
+
+@media (hover: hover) {
+  .split__time:hover {
+    border-color: var(--rose);
+    background: var(--card);
+    color: var(--ink);
+  }
+}
+
+.split__go {
+  justify-content: center;
+  min-height: 50px;
+  border-radius: 0 0 24px 24px;
+  background: var(--rose);
+  font-weight: 500;
+  color: #fff;
+}
+
+@media (hover: hover) {
+  .split__go:hover {
+    background: color-mix(in srgb, var(--rose) 86%, #000);
+  }
+}
+
+.seg {
+  border-color: var(--line-2);
+}
+
+/* The appointment card: blush, notched like a ticket. */
+.slip__name {
+  font-variation-settings: 'opsz' 40;
+}
+
+.perf::before,
+.perf::after {
+  background: var(--paper);
+}
+
+@media (max-width: 759px) {
+  .pick-groups {
+    gap: 14px;
+  }
+
+  .pick-group {
+    padding: 20px 18px 8px;
+  }
+
+  .slots {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .slot,
+  .slot-gone {
+    height: 50px;
+    padding: 0 4px;
+  }
+
+  .slot[aria-pressed='true'] {
+    background: var(--rose);
+    color: #fff;
+  }
+
+  .step-head__title {
+    font-size: clamp(30px, 8.6vw, 38px);
+  }
+
+  .m-bar {
+    border-radius: 22px 22px 0 0;
   }
 }

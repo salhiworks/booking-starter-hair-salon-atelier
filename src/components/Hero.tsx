@@ -39,22 +39,13 @@ function AddressLines({ address }: { address: string }) {
   );
 }
 
-/** Today · Find us · Call — from the engine (today's real hours, address, phone). */
+/** Find us · Call — from the engine (address, phone); today's status sits on the mirror. */
 function HeroFacts() {
   const { business } = useSiteData();
-  const status = useTodayStatus();
   if (business.state !== 'ready') return <div className="hero__facts hero__facts--empty" aria-hidden="true" />;
   const { contact } = business.data;
   return (
     <dl className="hero__facts">
-      {status ? (
-        <div>
-          <dt>Today</dt>
-          <dd>
-            <StatusLine status={status} as="span" />
-          </dd>
-        </div>
-      ) : null}
       {contact.address ? (
         <div>
           <dt>Find us</dt>
@@ -77,25 +68,22 @@ function HeroFacts() {
   );
 }
 
-/** A spread: the photo plate on the left page, the type on the right (stacked on phones). */
+/**
+ * The first screen: the words on the porcelain page, the photo in an arched
+ * frame like the salon's mirrors (a fine outline arch stands just behind it),
+ * and today's status on a small card at the mirror's foot. Phones: the words,
+ * Book, Find us · Call, then the mirror.
+ */
 export function Hero() {
   const { values } = useContent();
   const title = values['hero.title'];
   const ending = values['hero.titleEnding'];
   const photo = values['hero.photo'];
   const size = titleSize(title.length + ending.length);
+  const status = useTodayStatus();
   return (
     <section className="hero" id="top" aria-labelledby="hero-title">
-      <PhotoFrame
-        className={photo ? 'hero__plate' : 'hero__plate hero__plate--type'}
-        image={photo}
-        plate={plateLabel(values, 'hero.photo')}
-        // The plate is 42% of the page beside the type, the full width when stacked.
-        sizes="(min-width: 60em) 42vw, 100vw"
-        priority
-        fallback="&"
-      />
-      <div className="hero__page">
+      <div className="wrap hero__grid">
         <div className="hero__copy">
           {values['hero.eyebrow'] ? <p className="kicker hero__kicker">{values['hero.eyebrow']}</p> : null}
           <h1 id="hero-title" className={`display hero__title hero__title--${size}`}>
@@ -113,13 +101,31 @@ export function Hero() {
               {values['hero.cta']}
               <Icon icon={ArrowRight} size={18} className="icon--forward" />
             </BookLink>
-            <a className="text-link" href="#services">
+            <a className="text-link hero__prices" href="#services">
               {values['hero.secondary']}
               <Icon icon={ArrowDown} size={16} />
             </a>
           </div>
+          <HeroFacts />
         </div>
-        <HeroFacts />
+        <div className="hero__visual">
+          <span className="hero__mirror" aria-hidden="true" />
+          <PhotoFrame
+            className={photo ? 'hero__plate plate--arch' : 'hero__plate plate--arch hero__plate--type'}
+            image={photo}
+            plate={plateLabel(values, 'hero.photo')}
+            // The arch is about 40% of the page beside the words, nearly the full width when stacked.
+            sizes="(min-width: 60em) 40vw, 92vw"
+            priority
+            fallback="&"
+          />
+          {status ? (
+            <p className="hero__today">
+              <span className="hero__today-label">Today</span>
+              <StatusLine status={status} as="span" />
+            </p>
+          ) : null}
+        </div>
       </div>
     </section>
   );

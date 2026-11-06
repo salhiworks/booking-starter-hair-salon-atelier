@@ -77,16 +77,16 @@ Each service may carry a photo: `service.image` from `listServices()` —
 `{ url, alt, width, height }` or null (none is the normal case; never required
 to create or book a service). The owner adds, replaces and removes them in
 `/admin/` → Services. The site shows them only in "The menu"
-(`src/components/ServicesSection.tsx`), in its own Atelier style:
+(`src/components/ServicesSection.tsx`), in its own Atelier style (arched frames):
 
 - Wide screens with a pointer (`(min-width: 960px) and (hover: hover)`): one
-  4:5 plate under the menu's header shows the service pointed at or tabbed to
+  arched 4:5 plate under the menu's header shows the service pointed at or tabbed to
   (the first pictured service in menu order until then), captioned "NAME
   duration · price"; each pictured service has a small mark at the start of
-  its dot leader, copper while its photo is shown. The photo on screen stays
+  its dot leader, rosewood while its photo is shown. The photo on screen stays
   until the next has loaded, which then fades in (no fade with reduced motion).
-- Phones, tablets and touch screens: a sideways, scroll-snapping row of 4:5
-  plates above the menu, captioned with the service names only — duration, price
+- Phones, tablets and touch screens: a sideways, scroll-snapping row of arched
+  4:5 plates above the menu, captioned with the service names only — duration, price
   and Book appear once, in the menu below.
 - No photos: neither exists; the menu is the plain typeset menu. One photo: one
   plate. Frames are fixed (`aspect-ratio`, `object-fit: cover`, lazy), so any
@@ -109,7 +109,7 @@ developer's own device time zone.
 | Design tokens (palette, type scale, grid, motion, surface roles) — one file | `src/styles/tokens.css` |
 | Reset, type roles (`.display`, `.kicker`), buttons, links, notices, photo plates | `src/styles/base.css` |
 | Page sections (header + phone menu, hero, menu, studio, team, kind words, FAQ, visit, call to action, footer) | `src/styles/site.css` |
-| Booking view (header + route, slip, month calendar, week strip, times, forms, code, ticket) | `src/styles/booking.css` |
+| Booking sheet (centred sheet / phone sheet, header + route, appointment card, month calendar, week strip, pill times, forms, code, ticket; "The Mirror finish" block at the end) | `src/styles/booking.css` |
 | Icons: Lucide only, one optical stroke | `src/components/Icon.tsx` |
 | Photos in fixed frames, captions from their descriptions, page-turn reveal | `src/components/PhotoFrame.tsx` |
 | Page sections | `src/components/*.tsx`, assembled in `src/App.tsx` (section numbers I–VI: `src/lib/sections.ts`) |
@@ -127,25 +127,31 @@ developer's own device time zone.
 | Error-code → wording | `src/lib/messages.ts` |
 | Admin brand colours | `src/admin-theme.css` |
 
-Design language: "Atelier" — a slow, confident print magazine about one salon.
-Paper `#f4eee4`, bone `#eae2d4`, card `#fbf8f2`, ink `#241a14` (and `#594a3f`,
-`#6f5f54`), one espresso spread `#2a1e17` with cream `#f2eadd`; copper only as
-an accent: `--burnished` (brand.accentLight, `#8a4420`) on paper and
-`--copper-bright` (brand.accentDark, `#de9b66`) on espresso. Structure comes
-from hairlines and alignment, not boxes. Newsreader (display and numerals,
-optical sizes, real italics; the headline ending is copper italic on its own
-line) + Instrument Sans (text and interface), both self-hosted via
-@fontsource-variable. Numbered sections I–VI, photos as captioned plates, a
-typeset menu with dot leaders. Lucide icons only. The look is this starter's
-own, not an engine template: customize the words and palette, keep the system.
+Design language: "Atelier · The Mirror" — a beauty house on porcelain (full
+system, contrast table and composition in `DESIGN.md`). Porcelain `#f8f2ee`,
+blush `#f1e4dd`, petal `#e9d7cf`, card `#fffbf8`, cocoa ink `#2a1b1d` (and
+`#5e4a4c`, `#735e5d`), one cocoa band `#2e1c1e` with cream `#f7ebe6`;
+rosewood as the one accent: `--rose` (brand.accentLight, `#98463f`) on light
+surfaces and `--rose-bright` (brand.accentDark, `#e7a99b`) on cocoa. The
+signature is the salon mirror: large photos sit in arches (`.plate--arch`,
+`--r-arch`), others in soft rounded panes; cards and pills, not boxes and
+rules. Bodoni Moda (display, names, prices, numerals; optical sizes, real
+italics; the headline ending is rosewood italic on its own line) + Jost (text
+and interface), both self-hosted via @fontsource-variable. Numbered sections
+I–VI, photo captions "No. 01…", a price card with dot leaders. Lucide icons
+only. The look is this starter's own, not an engine template: customize the
+words and palette, keep the system.
 
 ## Booking flow rules this site already follows — keep them
 
-- A focused full-screen view (a modal `<dialog>` at `#book`, no path routes),
+- A booking sheet (a modal `<dialog>` at `#book`, no path routes): centred and
+  rounded over the dimmed page on wide screens, full height with rounded top
+  corners on phones,
   opened by every "Book" action; Back, Esc and Close close it, and the flow
   keeps its state while closed. Opening it after a finished booking starts a new one.
 - Service → Date & time → Your details → Verify email → Done (five steps; the
-  route is in the view's header, a five-segment bar on phones). The slip keeps
+  route is in the view's header, a five-segment bar on phones). The blush
+  appointment card (the slip, `Slip.tsx`) keeps
   service, length, price, day, time and time zone in view; at the code step it
   says until when the time is held (no "Change" there). On the date-and-time
   step it stands exactly as tall as the calendar beside it (`.bk-layout--times`:
@@ -154,7 +160,7 @@ own, not an engine template: customize the words and palette, keep the system.
   (`monthGrid(month, firstDayOfWeek(locale))`, ≤ 42 days), again on month
   change; loaded months are kept per service and reload. On entry the soonest
   day with times in the visible month is chosen (`nextAvailableDay`). Days show
-  the server's status, at most one mark each: open (a copper dot), few left
+  the server's status, at most one mark each: open (a rosewood dot), few left
   (`isFewLeft`: "2 left"), full (struck through, receding), closed (a quiet,
   lighter numeral, no mark), outside the window (faint, disabled); today has a
   ring, the chosen day is filled — never colour alone, and every day's
@@ -165,8 +171,8 @@ own, not an engine template: customize the words and palette, keep the system.
   the choice and Continue.
 - Times grouped Morning (< 12:00) / Afternoon (< 17:00) / Evening by the
   server's `slot.time` (`groupSlotsByPartOfDay`), as tabs with counts; buttons
-  show `formatTime(slot.startsAt, timezone, locale)`. The chosen time unfolds
-  into "time until … | Continue". "Soonest" offers the first time already loaded.
+  show `formatTime(slot.startsAt, timezone, locale)`. Times are pills; the chosen
+  one unfolds into a small card, "time until …" over Continue. "Soonest" offers the first time already loaded.
 - Details submit is "Continue" ("Next, we'll email you a 6-digit code"):
   nothing is booked before the code. Fields are checked when left and on
   Continue; the engine's `INVALID_INPUT` `field` maps back onto them.
@@ -213,6 +219,8 @@ own, not an engine template: customize the words and palette, keep the system.
   a photo's description is also its caption. No hot-linked stock photos.
   Service photos are captioned with the service (name, duration, price) and
   carry the owner's description as their `alt` (see "Service photos").
+- The Live Demo and preview mode show a fictional business: the Visit section
+  says so ("Sample" tag: the address, phone and email are examples).
 - One page only: in-page anchors (`#services`, `#book`, …), no client-side routes.
 
 ## Accessibility & quality bar
@@ -221,7 +229,7 @@ Responsive from 320 px; one visible `:focus-visible` ring (`--focus` per
 surface); labels on every input; phone targets ≥ 44 px; every motion (plate
 reveals, rises, the unfolding time) sits under `prefers-reduced-motion:
 no-preference`; text contrast ≥ 4.5:1 on every surface (ratios are noted in
-`tokens.css` — use `--accent-text`, which follows the surface, for small copper text).
+`tokens.css` — use `--accent-text`, which follows the surface, for small rosewood text).
 
 ## Commands
 

@@ -1,10 +1,10 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-// Self-hosted type: Newsreader (display and numerals, with optical sizes and
-// real italics) + Instrument Sans (text and interface).
-import '@fontsource-variable/newsreader/opsz.css';
-import '@fontsource-variable/newsreader/opsz-italic.css';
-import '@fontsource-variable/instrument-sans/wght.css';
+// Self-hosted type: Bodoni Moda (display, names, prices and numerals, with
+// optical sizes and real italics) + Jost (text and interface).
+import '@fontsource-variable/bodoni-moda/opsz.css';
+import '@fontsource-variable/bodoni-moda/opsz-italic.css';
+import '@fontsource-variable/jost/wght.css';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/site.css';

@@ -2,7 +2,7 @@ import { plateLabel, useContent } from '../lib/content';
 import { useSectionNumber } from '../lib/sections';
 import { PhotoFrame } from './PhotoFrame';
 
-/** The one espresso spread: the salon, its photos and how a visit goes. Words and photos: dashboard → Website. */
+/** The blush band: the salon, its photos and how a visit goes, step by step. Words and photos: dashboard → Website. */
 export function StudioSection() {
   const { values } = useContent();
   const number = useSectionNumber('studio');
@@ -11,7 +11,7 @@ export function StudioSection() {
   const detail = values['studio.detailPhoto'];
   const quote = values['studio.quote'].replace(/^[\s“”"]+|[\s“”"]+$/g, '');
   return (
-    <section id="studio" className="section studio surface-dark" aria-labelledby="studio-title">
+    <section id="studio" className="section studio" aria-labelledby="studio-title">
       <div className="wrap">
         <div className={photo ? 'studio__top' : 'studio__top studio__top--text'}>
           <div className="studio__text">
@@ -37,7 +37,7 @@ export function StudioSection() {
         <div className={detail ? 'studio__mid' : 'studio__mid studio__mid--text'}>
           {detail ? (
             <PhotoFrame
-              className="studio__detail plate--hover"
+              className="studio__detail plate--arch plate--hover"
               image={detail}
               plate={plateLabel(values, 'studio.detailPhoto')}
               sizes="(min-width: 60em) 30vw, (min-width: 40em) 50vw, 80vw"
@@ -56,24 +56,25 @@ export function StudioSection() {
                 ) : null}
               </figure>
             ) : null}
-            {steps.length > 0 ? (
-              <div className="steps">
-                <h3 className="steps__title kicker">{values['studio.stepsTitle']}</h3>
-                <ol className="steps__list">
-                  {steps.map((step, index) => (
-                    <li className="steps__item" key={`${index}-${step.title}`}>
-                      <span className="steps__n" aria-hidden="true">
-                        {index + 1}
-                      </span>
-                      <h4 className="steps__name">{step.title}</h4>
-                      {step.body ? <p className="steps__body">{step.body}</p> : null}
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            ) : null}
           </div>
         </div>
+
+        {steps.length > 0 ? (
+          <div className="steps">
+            <h3 className="steps__title kicker">{values['studio.stepsTitle']}</h3>
+            <ol className={`steps__list steps__list--${Math.min(steps.length, 4)}`}>
+              {steps.map((step, index) => (
+                <li className="steps__item" key={`${index}-${step.title}`}>
+                  <span className="steps__n" aria-hidden="true">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <h4 className="steps__name">{step.title}</h4>
+                  {step.body ? <p className="steps__body">{step.body}</p> : null}
+                </li>
+              ))}
+            </ol>
+          </div>
+        ) : null}
       </div>
     </section>
   );

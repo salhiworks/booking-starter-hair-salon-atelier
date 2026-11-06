@@ -1,29 +1,50 @@
 # Photographs — provenance and rules
 
-Every photograph in this starter is **AI-generated**, made for this project
-on 2026-11-01 through the ElevenLabs image tools connected to the owner's
-account (model: ByteDance Seedream 5 Pro, 2048×1152 masters). No stock photos,
-no photos of real people, nothing hot-linked. The owner's ElevenLabs plan
-governs commercial use of the outputs.
+The site's photographs come from two sources. Five are **licensed Pexels
+photos** chosen for the "Mirror" design on 2026-11-06. Two are
+**AI-generated** for this project on 2026-11-01. Every file is a processed
+crop (AVIF + WebP at three widths). Nothing is hot-linked, and no unaltered
+original ships in this starter.
+
+## Pexels photos (Pexels License)
+
+[Pexels License](https://www.pexels.com/license/): free to use and modify,
+attribution not required (credited here anyway); unaltered copies may not be
+sold or redistributed as stock. Each source page was checked on 2026-11-06
+(License: Free). Downloaded from images.pexels.com at 2400 px wide; the working
+copies stay outside this repository.
+
+| Served as (`public/photos/…`) | Where | Source page | Photographer | Edits |
+|---|---|---|---|---|
+| `hero-curls-{480,720,960}` (4:5) | Hero mirror (`hero.photo`) | https://www.pexels.com/photo/woman-s-hairstyle-3065208/ | Engin Akyurt | Cropped from the top so a blurred person at the mirror behind the client is out of frame |
+| `salon-arch-{400,640,864}` (3:4) | The studio, arched detail (`studio.detailPhoto`) | https://www.pexels.com/photo/empty-armchairs-in-the-room-7823407/ | Marina Chocobar | Cropped to 3:4 |
+| `sample-color-{400,640,922}` (4:5) | Sample stylist card 1 | https://www.pexels.com/photo/woman-getting-her-hair-color-3993323/ | cottonbro studio | Tight crop on the hair and the gloved hand: the client's profile is out of frame |
+| `sample-precision-{400,640,922}` (4:5) | Sample stylist card 2 | https://www.pexels.com/photo/a-person-holding-scissors-and-green-comb-7253877/ | cottonbro studio | Cropped to 4:5, hands only |
+| `sample-curls-{400,640,922}` (4:5) | Sample stylist card 3 | https://www.pexels.com/photo/anonymous-woman-drying-hair-of-unrecognizable-black-man-7389084/ | John Diez | Cropped from the top: the client's face (lower edge) is out of frame |
+
+The three sample-card photos show stylists and clients at work in other
+salons. No face is visible, the cards are tagged "Sample photo", and the
+section says "Sample profiles".
+
+## AI-generated photos
+
+Made through the ElevenLabs image tools connected to the owner's account
+(model: ByteDance Seedream 5 Pro, 2048×1152 masters). No photos of real
+people. The owner's ElevenLabs plan governs commercial use of the outputs.
 
 | File (`public/photos/…`) | Used for | Prompt (abridged) |
 |---|---|---|
-| `hero-*` | Hero plate (`hero.photo`) | Stylist cutting softly wavy brown hair, client from behind, warm late-afternoon window light; cropped to the hair and window — the hands and scissors are left out of frame |
-| `studio-wide-*` | The studio spread's wide plate (`studio.photo`, 3:2) | Two cognac leather chairs, round brass mirrors, espresso wall, window light, no people |
-| `color-bar-*` | The studio detail plate (`studio.detailPhoto`) | Copper and ceramic colour bowls with tint brushes on a walnut counter |
-| `sample-color-*`, `sample-precision-*`, `sample-curls-*` | Sample stylist cards (`team.members[].portrait`) | Hands at work — colour, a precision cut, curls — **no faces** |
-| `storefront-*` | Visit plate (`visit.photo`) | Espresso-painted shopfront on a tree-lined Portland street at golden hour, no signage |
+| `studio-wide-*` | The studio's wide pane (`studio.photo`, 3:2) | Two cognac leather chairs, round brass mirrors, espresso wall, window light, no people |
+| `storefront-*` | Visit pane (`visit.photo`) | Espresso-painted shopfront on a tree-lined Portland street at golden hour, no signage |
 
-Crops: each photo was cut from its 2048×1152 master for the frame it fills
-and exported as AVIF + WebP at three widths. The studio photo is a wide
-1728×1152 (3:2) plate keeping both chairs, the round mirrors and the window.
-The masters and the crop script are not part of this starter; to use your own
-photos, add variants in the same sizes under `public/photos/` or upload them in
-the dashboard → Website.
+Each was cut from its 2048×1152 master and exported as AVIF + WebP at three
+widths. The masters and the crop script are not part of this starter. To use
+your own photos, add variants in the same sizes under `public/photos/` (and
+`src/content/photos.json`), or upload them in the dashboard → Website.
 
-Photographic direction: warm late-afternoon window light, 35 mm editorial,
-shallow depth of field, natural colour in espresso, burnished copper and
-cream — the palette of the site's design tokens.
+Photographic direction for replacements: soft, warm light; hair, hands at work
+and the room; never a face presented as staff. The design frames photos in
+arches and rounded panes on porcelain and blush.
 
 Rules this site follows:
 
