@@ -184,7 +184,8 @@ export function seedState(config: DemoConfig, now = new Date()): DemoState {
     holds: {},
     content: { draft: {}, published: {}, draftRevision: 0, version: 0, draftUpdatedAt: null, publishedAt: null },
     images: {},
-    emails: seedEmails(bookings, config, now),
+    // Nothing is ever emailed from a demo, so it starts with no email history.
+    emails: [],
   };
 }
 
@@ -262,34 +263,6 @@ function seedBookings(
     }
   }
   return out;
-}
-
-/** A plausible email history for the dashboard's Email page — fictional recipients only. */
-function seedEmails(bookings: AdminBooking[], config: DemoConfig, now: Date): EmailStatus['recent'] {
-  const recent = bookings
-    .filter((b) => b.createdAt < iso(now.getTime()))
-    .slice(-6)
-    .map((b, i) => ({
-      id: `em-seed-${i + 1}`,
-      kind: (b.status === 'pending' ? 'request_received' : 'booking_confirmed') as EmailStatus['recent'][number]['kind'],
-      status: 'sent' as const,
-      recipient: b.customer.email,
-      attempts: 1,
-      createdAt: b.statusChangedAt,
-      sentAt: b.statusChangedAt,
-      lastError: null,
-    }));
-  recent.push({
-    id: 'em-seed-test',
-    kind: 'test',
-    status: 'sent',
-    recipient: config.ownerEmail,
-    attempts: 1,
-    createdAt: iso(now.getTime() - 20 * 86_400_000),
-    sentAt: iso(now.getTime() - 20 * 86_400_000),
-    lastError: null,
-  });
-  return recent.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
 // --- Persistence -----------------------------------------------------------------

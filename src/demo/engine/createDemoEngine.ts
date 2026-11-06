@@ -713,20 +713,14 @@ export function createDemoEngine(config: DemoConfig): DemoEngine {
       },
 
       async emailStatus() {
-        const s = read();
-        const last = s.emails[0]?.sentAt ?? null;
+        // A demo delivers nothing: no last success, no counts, no history (the
+        // dashboard is told emailDelivery 'none' and says email is simulated).
+        // Rows a visitor's browser kept from an older demo version are dropped too.
         return ok({
-          mailer: { lastAttemptAt: last, lastSuccessAt: last, lastFailureAt: null, lastError: null },
-          wiring: { pgNet: true, configured: true, schedule: true, lastStart: last ? { at: last, status: 200, error: null } : null },
-          counts: {
-            queued: 0,
-            oldestQueuedAt: null,
-            failedLast7Days: 0,
-            retryable: 0,
-            sentLast24h: s.emails.filter((e) => e.sentAt && Date.parse(e.sentAt) > nowMs() - 86_400_000).length,
-            codesLast24h: 0,
-          },
-          recent: s.emails.map((e) => ({ ...e })),
+          mailer: { lastAttemptAt: null, lastSuccessAt: null, lastFailureAt: null, lastError: null },
+          wiring: { pgNet: true, configured: true, schedule: true, lastStart: null },
+          counts: { queued: 0, oldestQueuedAt: null, failedLast7Days: 0, retryable: 0, sentLast24h: 0, codesLast24h: 0 },
+          recent: [],
         });
       },
 

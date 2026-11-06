@@ -12,7 +12,7 @@ fictional salon in Portland, Oregon:
   website's own text, photos and colours.
 
 Booking runs on [`@profitstudio/booking-engine`](https://www.npmjs.com/package/@profitstudio/booking-engine)
-**2.0.0-beta.2** (pinned) with your own Supabase project and Resend for email.
+**2.0.0-beta.3** (pinned) with your own Supabase project and Resend for email.
 
 ## 1. Try it (no accounts needed)
 

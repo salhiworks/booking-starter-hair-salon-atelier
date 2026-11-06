@@ -6,7 +6,7 @@ in Portland, Oregon) for the owner to make their own. Its identity lives in
 Vite + React + TypeScript, plain CSS, one HTML page (sections + an in-page
 booking flow) plus the packaged admin dashboard at `/admin/`.
 
-Booking runs on **@profitstudio/booking-engine 2.0.0-beta.2** (exact version;
+Booking runs on **@profitstudio/booking-engine 2.0.0-beta.3** (exact version;
 see `booking-engine.lock.json`). Read these before touching booking code — they
 win over anything else on technical points:
 
