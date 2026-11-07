@@ -5,5 +5,6 @@
 export { createDemoEngine } from './createDemoEngine';
 export type { DemoEngine } from './createDemoEngine';
 export type { DemoConfig, DemoCustomer, DemoServicePhoto } from './state';
-// The demo strip is imported on its own (./DemoBar), and only by a demo build:
+// The demo dock (the floating "Live demo · Dashboard · ···" capsule) is imported
+// on its own (./DemoBar → mountDemoBar / mountDemoDock), and only by a demo build:
 // it carries CSS, which a normal build must never pull in through this file.
