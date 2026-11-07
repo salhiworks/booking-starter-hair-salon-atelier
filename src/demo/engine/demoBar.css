@@ -58,7 +58,8 @@
 
 .bdock-bar,
 .bdock-pop {
-  background: rgba(255, 255, 255, 0.64);
+  /* Frosted but dense enough that busy page text never reads through the labels. */
+  background: rgba(255, 255, 255, 0.82);
   -webkit-backdrop-filter: blur(22px) saturate(180%);
   backdrop-filter: blur(22px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.55);
@@ -67,6 +68,14 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.8),
     0 12px 32px -10px rgba(0, 0, 0, 0.3),
     0 2px 6px rgba(0, 0, 0, 0.07);
+}
+
+/* "Reduce transparency" (or no backdrop blur at all): solid, so text never shows through. */
+@media (prefers-reduced-transparency: reduce) {
+  .bdock-bar,
+  .bdock-pop {
+    background: rgba(250, 250, 250, 0.97);
+  }
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
@@ -82,18 +91,29 @@
   gap: 2px;
   padding: 4px;
   border-radius: 999px;
-  transition:
-    opacity 600ms ease,
-    box-shadow 300ms ease;
+  transition: box-shadow 600ms ease;
 }
 
-/* After a few quiet seconds it softens; hover, focus or a tap brings it back. */
+.bdock-bar > * {
+  transition: opacity 600ms ease;
+}
+
+/* After a few quiet seconds it softens: the glass stays solid (the page never
+   shows through the labels); only its contents and shadow quieten. Hover, focus
+   or a tap brings it back. */
 .bdock.is-resting .bdock-bar {
-  opacity: 0.62;
+  box-shadow:
+    0 0 0 0.5px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 6px 18px -10px rgba(0, 0, 0, 0.22);
 }
 
-.bdock:hover .bdock-bar,
-.bdock:focus-within .bdock-bar {
+.bdock.is-resting .bdock-bar > * {
+  opacity: 0.6;
+}
+
+.bdock:hover .bdock-bar > *,
+.bdock:focus-within .bdock-bar > * {
   opacity: 1;
 }
 
@@ -425,6 +445,7 @@
   .bdock,
   .bdock.is-aside,
   .bdock-bar,
+  .bdock-bar > *,
   .bdock-status,
   .bdock-btn,
   .bdock-icon {
